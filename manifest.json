@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "prmono",
+    "description": "A Chrome Extension",
+    "version": "0.0.0",
+    "icons": {},
+    "permissions": [],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://github.com/*/*/pull/*",
+                "file:///Users/d/Documents/code/prmono/src/chrome/test.html"
+            ],
+            "js": [
+                "pull.import.js"
+            ],
+            "css": [
+                "pull.css"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "pull.js",
+                "github.js",
+                "common.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}
