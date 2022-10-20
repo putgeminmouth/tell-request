@@ -121,5 +121,13 @@ export const Util = {
         const tpl = document.createElement(parent);
         tpl.innerHTML = template;
         return tpl.firstElementChild;
+    },
+    createEventHandler: () => {
+        const underlying = document.createElement('div');
+        const eventMethods = ['addEventListener', 'removeEventListener', 'dispatchEvent'];
+        const handler = {};
+        handler.attach = target => eventMethods.forEach(x => target[x] = function () { return handler[x].apply(handler, arguments) });
+        eventMethods.forEach(x => handler[x] = underlying[x].bind(underlying));
+        return handler;
     }
 };

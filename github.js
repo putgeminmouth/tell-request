@@ -152,5 +152,9 @@ export class PullRequestPage {
     getPullId() {
         return window.location.toString().replace(/.*\/pull\/([^\/]+)\/.*/, '$1');
     }
+
+    getRandomCommentId() {
+        return Util.randomItem(document.body.querySelectorAll('.timeline-comment-group')).id.slice(1);
+    }
 }
 
