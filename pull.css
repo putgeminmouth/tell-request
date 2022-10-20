@@ -3,9 +3,7 @@
     background-color: var(--color-canvas-subtle);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .comment-form-head .toolbar {
-    width: 100%;
-}
+.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .comment-form-head .toolbar {}
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae---- .tabnav-tabs {
     background-color: var(--color-canvas-subtle);
@@ -31,4 +29,8 @@
 .----cc91a745-d35c-466f-9047-3f20031fb4ae---- textarea.comment-form-textarea {
     padding-top: 15px;
     padding-left: 15px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-linker-over {
+    background-color: aqua;
 }
