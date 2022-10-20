@@ -112,7 +112,7 @@ class CommentUI {
         this.prPage = prPage;
         this.fileElem = fileElem;
         this.events = Util.createEventHandler();
-        this.currentVisual = new Comment({ file, lineNo, text: '' });
+        this.currentValue = new Comment({ file, lineNo, text: '' });
 
         const tr = this.tr = Util.createElement({
             parent: 'tbody', template: `
@@ -233,16 +233,16 @@ class CommentUI {
     }
 
     onCancelClick() {
-        this.textarea.value = this.currentVisual.text || '';
+        this.textarea.value = this.currentValue.text || '';
         this.tr.querySelector('button[name="preview"]').click();
     }
 
     async onSaveClick() {
         const text = this.textarea.value;
-        this.currentVisual.text = text;
+        this.currentValue.text = text;
 
         const detail = {
-            comment: this.currentVisual,
+            comment: this.currentValue,
             _promises: [],
             promise() {
                 const p = Promises.create();
@@ -285,6 +285,27 @@ class CommentUI {
     }
 }
 
+class TopToolbarUI {
+    constructor() {
+        const toolbar = this.toolbar = Util.createElement(`
+            <div class="${MAGIC} top-toolbar">
+                <div class="context"></div>
+                <button name="prev" class="btn-octicon">⇠</button>
+                <button name="next" class="btn-octicon">⇢</button>
+                <button name="linkTo" class="btn-octicon">🔗</button>
+
+            </div>
+        `);
+        this.prevButton = toolbar.querySelector('button[name="prev"]');
+        this.nextButton = toolbar.querySelector('button[name="next"]');
+        this.linkButton = toolbar.querySelector('button[name="linkTo"]');
+        this.events = Util.createEventHandler();
+
+        this.prevButton.addEventListener('prev', e => this.events.dispatchEvent(e));
+        this.prevButton.addEventListener('next', e => this.events.dispatchEvent(e));
+    }
+}
+
 class App {
     constructor({ github, prPage }) {
         this.github = github;
@@ -295,6 +316,13 @@ class App {
     init(document) {
         const fileElem = document.querySelectorAll('div[data-tagsearch-path].file').first();
         this.file = this.createFile(fileElem);
+
+        const toolbar = new TopToolbarUI();
+        document.querySelector('.pr-toolbar').append(toolbar.toolbar);
+
+        document.body.addEventListener('focusin', e => {
+            if (e.currentTarget.tagName !== 'TR' || e.currentTarget.classList.contains(MAGIC)) return;
+        });
     }
 
     export() {
