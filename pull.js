@@ -25,35 +25,55 @@ const parseComment = c => {
 };
 
 const renderComment = c => {
-    return c.comment + ((!c.comment.length || /\s$/.test(c.commenttext)) ? '' : '\n') + '<!-- ' + MAGIC + JSON.stringify(c.data) + MAGIC + ' -->';
+    return c.comment + ((!c.comment.length || /\s$/.test(c.comment)) ? '' : '\n') + '<!-- ' + MAGIC + JSON.stringify(c.data) + MAGIC + ' -->';
 };
 
 class Ids {
     static _idGen = 0;
+    static initId(id) {
+        this._idGen = ++id;
+    }
     static nextId() { return `${++Ids._idGen}`; }
+    static valid(id) { return !!id; } // documentation
 }
 
 class Visual {
-    constructor(file) {
-        this.id = Ids.nextId();
-        this.file = file;
-        this.lineNo = null;
+    constructor({ id, context }) {
+        this.id = id || Ids.nextId();
+        this.context = context;
+    }
+
+    static import(data) {
+        const typeKey = Object.keys(data)[0];
+        switch (typeKey) {
+            case 'comment': return Comment.import(data);
+        }
+    }
+
+    export() {
+        return {
+            id: this.id,
+            ...this.context.export()
+        };
     }
 }
 
 class Comment extends Visual {
-    constructor({ file, lineNo, text }) {
-        super(file);
-        this.lineNo = lineNo;
+    constructor({ id, context, text }) {
+        super({ id, context });
         this.text = text;
+    }
+
+    static import(data) {
+        const { id, text } = data.comment;
+        const context = FileContext.import(data.comment);
+        return new Comment({ id, context, text });
     }
 
     export() {
         return {
             comment: {
-                context: this.file.export(),
-                id: this.id,
-                lineNo: this.lineNo,
+                ...super.export(),
                 text: this.text
             }
         };
@@ -66,8 +86,35 @@ class File {
         this.filename = filename;
     }
 
+    static import(data) {
+        const { filename } = data.file;
+        return new File(filename);
+    }
+
     export() {
         return { file: { filename: this.filename } };
+    }
+}
+
+class FileContext {
+    constructor({ file, lineNo }) {
+        this.file = file;
+        this.lineNo = lineNo;
+    }
+
+    static import(data) {
+        const { lineNo } = data.context;
+        const file = File.import(data.context);
+        return new FileContext({ file, lineNo });
+    }
+
+    export() {
+        return {
+            context: {
+                lineNo: this.lineNo,
+                ...this.file.export()
+            }
+        };
     }
 }
 
@@ -84,7 +131,7 @@ class Presentation {
     }
 
     addOrReplaceVisual({ visual, position }) {
-        const existing = this.visuals.findIndex(x => x.lineNo === visual.lineNo);
+        const existing = this.visuals.findIndex(x => x.lineNo === visual.context.lineNo);
         if (existing !== -1) {
             this.visuals.splice(existing, 1);
         } else {
@@ -93,7 +140,7 @@ class Presentation {
     }
 
     findByLineNo(filename, lineNo) {
-        return this.visuals.find(x => x.file.filename === filename && x.lineNo === lineNo);
+        return this.visuals.find(x => x.context.file.filename === filename && x.context.lineNo === lineNo);
     }
 
     indexOf({ id }) {
@@ -104,15 +151,25 @@ class Presentation {
     export() {
         return { visuals: this.visuals.map(x => x.export()) };
     }
+
+    static import(data) {
+        const visuals = data.visuals.map(v => {
+            const vv = Visual.import(v);
+            return vv;
+        });
+        const p = new Presentation();
+        p.visuals = visuals;
+        return p;
+    }
 }
 
 class CommentUI {
-    constructor({ github, prPage, fileElem, file, lineNo }) {
+    constructor({ github, prPage, fileElem, context, value }) {
         this.github = github;
         this.prPage = prPage;
         this.fileElem = fileElem;
         this.events = Util.createEventHandler();
-        this.currentValue = new Comment({ file, lineNo, text: '' });
+        this.currentValue = value || new Comment({ context, text: '' });
 
         const tr = this.tr = Util.createElement({
             parent: 'tbody', template: `
@@ -144,6 +201,7 @@ class CommentUI {
             </tr>
         `});
         const textarea = this.textarea = tr.querySelector('textarea');
+        textarea.value = this.currentValue.text;
         const writeButton = this.writeButton = tr.querySelector('button[name="write"]');
 
         writeButton.addEventListener('click', e => this.onWriteClick(e));
@@ -313,9 +371,37 @@ class App {
         this.presentation = new Presentation();
     }
 
-    init(document) {
+    async init(document) {
         const fileElem = document.querySelectorAll('div[data-tagsearch-path].file').first();
-        this.file = this.createFile(fileElem);
+        const file = this.file = this.createFile(fileElem);
+
+        const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
+        const currentValue = issueForm.editForm.querySelector('textarea').value;
+        const parsed = parseComment(currentValue);
+        const getAllIds = (o) => {
+            if (o?.id) return o?.id;
+            return Object.values(o).map(v => {
+                if (Array.isArray(v))
+                    return v.map(getAllIds);
+                if (typeof (v) === 'object')
+                    return getAllIds(v);
+                return [];
+            });
+        };
+        const maxId = getAllIds(parsed).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
+        Ids.initId(maxId);
+        const imported = Presentation.import(parsed.data);
+
+        imported.visuals.forEach(v => {
+            const lineNo = v.context.lineNo;
+            const context = new FileContext({ file, lineNo });
+            const commentUI = this.createCommentUI({ fileElem, context, value: v });
+            document.querySelector(`*[data-tagsearch-path] *[data-line-number="${lineNo}"]`)
+                .ancestors(x => x.tagName === 'TR')
+                .first()
+                .after(commentUI.tr);
+            commentUI.writeButton.click();
+        });
 
         const toolbar = new TopToolbarUI();
         document.querySelector('.pr-toolbar').append(toolbar.toolbar);
@@ -336,8 +422,19 @@ class App {
         await this.github.issue.updateIssuePart({ part: 'body', text: renderComment(currentParsed) });
     }
 
-    createCommentUI({ fileElem, file, lineNo }) {
-        return new CommentUI({ github: this.github, prPage: this.prPage, fileElem, file, lineNo });
+    createCommentUI({ fileElem, context, value }) {
+        const commentUI = new CommentUI({ github: this.github, prPage: this.prPage, fileElem, context, value });
+        commentUI.events.addEventListener('save', async e => {
+            const { comment } = e.detail;
+            const promise = e.detail.promise();
+            try {
+                this.presentation.addOrReplaceVisual({ visual: comment });
+                await this.persist();
+            } finally {
+                promise.resolve();
+            }
+        });
+        return commentUI;
     }
 
     createFile(fileElem) {
@@ -345,6 +442,7 @@ class App {
 
         const createButton = (originalButton) => {
             const lineNo = originalButton.ancestors('td').first().previousElementSibling.getAttribute('data-line-number');
+            const context = new FileContext({ file, lineNo });
 
             const addButton = document.createElement('button');
             addButton.classList.add('add-line-comment');
@@ -355,17 +453,7 @@ class App {
             originalButton.parentElement.prepend(addButton)
 
             addButton.addEventListener('click', async e => {
-                const commentUI = this.createCommentUI({ fileElem, file, lineNo });
-                commentUI.events.addEventListener('save', async e => {
-                    const { comment } = e.detail;
-                    const promise = e.detail.promise();
-                    try {
-                        this.presentation.addOrReplaceVisual({ visual: comment });
-                        await this.persist();
-                    } finally {
-                        promise.resolve();
-                    }
-                });
+                const commentUI = this.createCommentUI({ fileElem, context });
 
                 originalButton.ancestors().filter(x => x.tagName === 'TR').first()
                     .after(commentUI.tr);
@@ -395,7 +483,7 @@ document.addEventListener('readystatechange', async e => {
             pullUrl: `/${owner}/${repository}/pull/${pull}`,
         });
         app = new App({ document, github, prPage });
-        app.init(document);
+        await app.init(document);
     }
 
     (() => {
