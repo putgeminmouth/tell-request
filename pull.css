@@ -1,11 +1,21 @@
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .comment-form-head {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root>td {
+    border: solid 2px transparent;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root.selected>td {
+    border-left: solid 2px var(--color-attention-fg);
+    border-right: solid 2px var(--color-attention-fg);
+    border-radius: 10px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .comment-form-head {
     flex-flow: row;
     background-color: var(--color-canvas-subtle);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .comment-form-head .toolbar {}
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .comment-form-head .toolbar {}
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .tabnav-tabs {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .tabnav-tabs {
     background-color: var(--color-canvas-subtle);
     border-radius: 6px 6px 0px 0px;
     overflow: visible;
@@ -13,20 +23,20 @@
     overflow: visible
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .tabnav-tab.selected {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .tabnav-tab.selected {
     margin-bottom: -1px;
     border-bottom: solid 1px var(--color-canvas-default);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .tabnav-content {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .tabnav-content {
     display: none;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- .tabnav-content.selected {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .tabnav-content.selected {
     display: initial;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae---- textarea.comment-form-textarea {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root textarea.comment-form-textarea {
     padding-top: 15px;
     padding-left: 15px;
 }
@@ -35,6 +45,7 @@
     background-color: aqua;
 }
 
+/*
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar {
     top: 0;
     position: sticky;
@@ -51,4 +62,88 @@
 
 .pr-toolbar {
     flex-direction: column;
+}
+ */
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar {
+    top: 60px;
+    position: sticky;
+    background-color: var(--color-canvas-default);
+    border: solid 1px var(--color-border-default);
+    border-radius: 6px;
+    display: flex;
+    flex-flow: column;
+    grid-column: -1;
+    height: 90vh;
+    max-width: var(--Layout-sidebar-width);
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li {
+    display: flex;
+    flex-flow: row;
+    margin: 0;
+    padding: 6px 5px 0px 0px;
+    border: solid 2px transparent;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li.selected {
+    border-left: solid 2px var(--color-attention-fg);
+    border-right: solid 2px var(--color-attention-fg);
+    border-radius: 8px;
+}
+
+/* .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li *:nth-child(1){ grid-co */
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar svg {
+    fill: currentColor;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .marker {
+    align-self: center;
+    cursor: pointer;
+    font-size: 30px;
+    user-select: none;
+    margin-right: 5px;
+    margin-left: -7px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .marker-rail {
+    margin-left: initial;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    background: var(--color-canvas-subtle);
+    color: var(--color-canvas-subtle);
+    border: solid 1px var(--color-accent-subtle);
+    border-left: none;
+    font-size: 15px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .content {
+    /* makes overflow of label work as expected ¯\_(ツ)_/¯ */
+    display: grid;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .context {
+    color: var(--color-fg-default);
+    font-weight: 400;
+    font-size: 0.75em;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .toolbar {
+    display: flex;
+    flex-flow: column;
+    margin-left: auto;
 }
