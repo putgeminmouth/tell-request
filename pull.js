@@ -404,14 +404,18 @@ class SidebarUI {
                     <div class="label">${visual.text}</div>
                 </div>
                 <div class="toolbar">
-                    <button name="navTo" class="btn-octicon">⊛</button>
-                    <button class="btn-octicon">?</button>
+                    <button name="navTo" class="btn-octicon">⎆</button>
+                    <button name="select" class="btn-octicon">⌖</button>
                 </div>
             </li>
         `);
         const navToButton = item.querySelector('button[name="navTo"]');
+        const selectButton = item.querySelector('button[name="select"]');
         navToButton.addEventListener('click', e => {
             this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id: item.data.id } }));
+        });
+        selectButton.addEventListener('click', e => {
+            this.events.dispatchEvent(new CustomEvent('select', { detail: { id: item.data.id } }));
         });
         item.data = {
             id: visual.id,
@@ -427,8 +431,10 @@ class SidebarUI {
     }
 
     select(id) {
+        if (this.list.querySelector('li.selected')?.data.id === id) return;
         this.list.querySelectorAll('li.selected').forEach(x => x.classList.remove('selected'));
         this.list.querySelectorAll('li').find(x => x.data?.id === id)?.classList.add('selected');
+        this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
     }
 }
 
@@ -464,6 +470,7 @@ class App {
         const sidebar = this.sidebar = new SidebarUI();
         document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.sidebar);
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
+        sidebar.events.addEventListener('select', e => this.onSidebarSelect(e));
 
         const maxId = getAllIds(parsed).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
         Ids.initId(maxId);
@@ -507,7 +514,11 @@ class App {
                 promise.resolve();
             }
         });
+
         commentUI.tr.addEventListener('focusin', _ => {
+            this.selectVisual(value.id);
+        });
+        commentUI.tr.addEventListener('click', _ => {
             this.selectVisual(value.id);
         });
         return commentUI;
@@ -560,12 +571,18 @@ class App {
         this.findVisualUI(id).rootElem.scrollIntoView({ behavior: 'smooth' });
     }
 
+    onSidebarSelect(e) {
+        const { id } = e.detail;
+        this.selectVisual(id);
+    }
+
     onSelect(e) {
         const { id } = e.detail;
         this.sidebar.select(id);
     }
 
     selectVisual(id) {
+        if (this.findVisualUI(id).rootElem.classList.contains('selected')) return;
         document.querySelectorAll(`.${MAGIC}.visual-root.selected`).forEach(x => x.classList.remove('selected'));
         this.findVisualUI(id)?.rootElem.classList.add('selected');
         this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
