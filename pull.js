@@ -197,16 +197,16 @@ class CommentUI extends VisualUI {
                     <div class="toolbar">
                     </div>
                     <textarea class="form-control input-contrast comment-form-textarea"></textarea>
+                    <div class="form-actions">
+                        <button type="button" name="save" class="btn btn-primary">Save</button>
+                        <button type="button" name="cancel" class="btn">Cancel</button>
+                    </div>
                 </div>
                 <div name="preview" class="tabnav-content">
                     <div class="toolbar">
                         <div name="position" class="toolbar-item btn-octicon"></div>
                     </div>
                     <div class="comment-body markdown-body"></div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" name="save" class="btn btn-primary">Save</button>
-                    <button type="button" name="cancel" class="btn">Cancel</button>
                 </div>
             </td>
         `);
@@ -217,6 +217,7 @@ class CommentUI extends VisualUI {
         tr.data = { visualUI: this };
         const textarea = this.textarea = tr.querySelector('textarea');
         textarea.value = this.currentValue.text;
+        const previewButton = this.previewButton = tr.querySelector('button[name="preview"]');
         const writeButton = this.writeButton = tr.querySelector('button[name="write"]');
 
         writeButton.addEventListener('click', e => this.onWriteClick(e));
@@ -536,7 +537,7 @@ class App {
                 .ancestors(x => x.tagName === 'TR')
                 .first()
                 .after(commentUI.tr);
-            commentUI.writeButton.click(); // todo: don't cause initial focus
+            commentUI.previewButton.click(); // todo: don't cause initial focus
         });
     }
 
