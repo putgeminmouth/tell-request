@@ -251,12 +251,7 @@ class CommentUI extends VisualUI {
         tr.querySelectorAll('.tabnav-tabs>button').forEach(button => {
             const name = button.name;
             button.addEventListener('click', e => {
-                tr.querySelectorAll(`.tabnav-tabs>button,.tabnav-tabs,.tabnav-content`).forEach(x => {
-                    x.classList.remove('selected');
-                });
-                tr.querySelectorAll(`.tabnav-tabs>button[name="${name}"],.tabnav-content[name="${name}"]`).forEach(x => {
-                    x.classList.add('selected');
-                });
+                setTab(name);
             });
         });
         // tr.querySelector('button[name="linkTo"]').addEventListener('click', _ => {
@@ -348,7 +343,21 @@ class CommentUI extends VisualUI {
         setTimeout(() => this.textarea.focus()); // no idea why timeout
     }
 
+    setTab(name) {
+        this.rootElem.querySelectorAll(`.tabnav-tabs>button,.tabnav-tabs,.tabnav-content`).forEach(x => {
+            x.classList.remove('selected');
+        });
+        this.rootElem.querySelectorAll(`.tabnav-tabs>button[name="${name}"],.tabnav-content[name="${name}"]`).forEach(x => {
+            x.classList.add('selected');
+        });
+    }
+
     async onPreviewClick() {
+        await this.setPreviewTab();
+    }
+
+    async setPreviewTab() {
+        this.setTab('preview');
         if (this.textarea.value === this.previousPreviewValue) return; // avoid api calls
         const text = this.textarea.value;
         const commentId = this.prPage.getRandomCommentId();
@@ -529,7 +538,7 @@ class App {
 
     async init(document) {
         const sidebar = this.sidebar = new SidebarUI();
-        document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.sidebar);
+        document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.rootElem);
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
         sidebar.events.addEventListener('delete', e => this.onSidebarDelete(e));
         sidebar.events.addEventListener('reorder', e => this.onSidebarReorder(e));
@@ -634,7 +643,7 @@ class App {
             const fileElem = tr.ancestors().find(x => x.classList.contains('file')).first();
             const commentUI = this.createCommentUI({ fileElem, value: x })
             tr.after(commentUI.rootElem);
-            commentUI.previewButton.click(); // todo: don't cause initial focus
+            commentUI.setPreviewTab(); // no need to await
         });
     }
 
