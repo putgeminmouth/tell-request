@@ -61,7 +61,7 @@ class Visual {
 class Comment extends Visual {
     constructor({ id, context, text }) {
         super({ id, context });
-        this.text = text;
+        this.text = text || '';
     }
 
     static import(data) {
@@ -118,13 +118,6 @@ class FileContext {
     }
 }
 
-class Link {
-    constructor({ prev, next, data }) {
-        this.prev = prev;
-        this.next = next;
-        this.data = data;
-    }
-}
 class Presentation {
     constructor() {
         this.visuals = [];
@@ -138,7 +131,7 @@ class Presentation {
             removed = this.visuals.splice(existing, 1);
         } else {
         }
-        this.visuals.splice(isNaN(position) ? -1 : position, 0, visual);
+        this.visuals.splice(isNaN(position) ? this.visuals.length : position, 0, visual);
 
         this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: removed } }));
     }
@@ -366,26 +359,6 @@ class CommentUI extends VisualUI {
     }
 }
 
-class TopToolbarUI {
-    constructor() {
-        const toolbar = this.toolbar = Util.createElement(`
-            <div class="${MAGIC} top-toolbar">
-                <div class="context"></div>
-                <button name="prev" class="btn-octicon">⇠</button>
-                <button name="next" class="btn-octicon">⇢</button>
-                <button name="linkTo" class="btn-octicon">🔗</button>
-
-            </div>
-        `);
-        this.prevButton = toolbar.querySelector('button[name="prev"]');
-        this.nextButton = toolbar.querySelector('button[name="next"]');
-        this.linkButton = toolbar.querySelector('button[name="linkTo"]');
-        this.events = Util.createEventTarget();
-
-        this.prevButton.addEventListener('prev', e => this.events.dispatchEvent(e));
-        this.prevButton.addEventListener('next', e => this.events.dispatchEvent(e));
-    }
-}
 class SidebarUI {
     constructor() {
         const sidebar = this.sidebar = Util.createElement(`
@@ -518,52 +491,54 @@ class App {
         this.prPage = prPage;
         this.events = Util.createEventTarget();
         this.presentation = new Presentation();
-        this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
 
+        this.files = [];
+
+        this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         this.events.addEventListener('select', e => this.onSelect(e));
     }
 
     async init(document) {
-        const fileElem = document.querySelectorAll('div[data-tagsearch-path].file').first();
-        const file = this.file = this.createFile(fileElem);
-
-        const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
-        const currentValue = issueForm.editForm.querySelector('textarea').value;
-        const parsed = parseComment(currentValue);
-        const getAllIds = (o) => {
-            if (o?.id) return o?.id;
-            return Object.values(o).map(v => {
-                if (Array.isArray(v))
-                    return v.map(getAllIds);
-                if (typeof (v) === 'object')
-                    return getAllIds(v);
-                return [];
-            });
-        };
-
         const sidebar = this.sidebar = new SidebarUI();
         document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.sidebar);
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
         sidebar.events.addEventListener('select', e => this.onSidebarSelect(e));
         sidebar.events.addEventListener('reorder', e => this.onSidebarReorder(e));
 
-        const maxId = getAllIds(parsed).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
+        this.initAddVisualButtons();
+
+        const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
+        const currentValue = issueForm.editForm.querySelector('textarea').value;
+        const parsed = parseComment(currentValue);
+        this.import(parsed.data);
+    }
+
+    import(data) {
+        const getAllIds = (o) => {
+            if (o?.id) return o?.id;
+            return Object.values(o).flatMap(v => {
+                if (Array.isArray(v))
+                    return v.flatMap(getAllIds);
+                if (typeof (v) === 'object')
+                    return getAllIds(v);
+                return [];
+            });
+        };
+
+        const maxId = getAllIds(data).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
         Ids.initId(maxId);
-        this.presentation.import(parsed.data);
+        this.presentation.import(data);
 
         this.presentation.visuals.forEach(v => {
             const lineNo = v.context.lineNo;
-            const context = new FileContext({ file, lineNo });
-            const commentUI = this.createCommentUI({ fileElem, context, value: v });
+            const fileElem = document.querySelector(`div[data-tagsearch-path="${v.context.file.filename}"].file`);
+            const commentUI = this.createCommentUI({ fileElem, context: v.context, value: v });
             document.querySelector(`[data-tagsearch-path] [data-line-number="${lineNo}"]`)
                 .ancestors(x => x.tagName === 'TR')
                 .first()
                 .after(commentUI.tr);
-            commentUI.writeButton.click();
+            commentUI.writeButton.click(); // todo: don't cause initial focus
         });
-        // document.body.addEventListener('focusin', e => {
-        //     if (e.currentTarget.tagName !== 'TR' || e.currentTarget.classList.contains(MAGIC)) return;
-        // });
     }
 
     export() {
@@ -599,10 +574,9 @@ class App {
         return commentUI;
     }
 
-    createFile(fileElem) {
-        const file = new File(fileElem.getAttribute('data-tagsearch-path'));
+    initAddVisualButtons() {
 
-        const createButton = (originalButton) => {
+        const createButton = ({ file, fileElem, originalButton }) => {
             const lineNo = originalButton.ancestors('td').first().previousElementSibling.getAttribute('data-line-number');
             const context = new FileContext({ file, lineNo });
 
@@ -615,7 +589,7 @@ class App {
             originalButton.parentElement.prepend(addButton)
 
             addButton.addEventListener('click', async e => {
-                const commentUI = this.createCommentUI({ fileElem, context });
+                const commentUI = this.createCommentUI({ fileElem, context, value: new Comment({ context }) });
 
                 originalButton.ancestors().filter(x => x.tagName === 'TR').first()
                     .after(commentUI.tr);
@@ -624,10 +598,12 @@ class App {
             return addButton;
         };
 
-        fileElem.querySelectorAll('button.add-line-comment')
-            .forEach(originalButton => createButton(originalButton));
-
-        return file;
+        const fileElems = document.querySelectorAll('div[data-tagsearch-path].file');
+        fileElems.forEach(fileElem => {
+            const file = new File(fileElem.getAttribute('data-tagsearch-path'));
+            fileElem.querySelectorAll('button.add-line-comment')
+                .forEach(originalButton => createButton({ file, fileElem, originalButton }));
+        });
     }
 
     findVisualUI(id) {
@@ -636,9 +612,8 @@ class App {
 
     onPresentationChange(e) {
         const { added, removed } = e.detail;
-        // add before remove to preserve validity of incides
-        added.forEach(x => this.sidebar.add(x, this.presentation.indexOf({ id: x.id })));
         removed.forEach(x => this.sidebar.remove(x.id));
+        added.forEach(x => this.sidebar.add(x, this.presentation.indexOf({ id: x.id })));
     }
 
     onSidebarNav(e) {
