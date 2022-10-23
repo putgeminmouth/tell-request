@@ -631,7 +631,7 @@ class App {
 
     onSidebarNav(e) {
         const { id } = e.detail;
-        this.findVisualUI(id).rootElem.scrollIntoView({ behavior: 'smooth' });
+        this.findVisualUI(id).rootElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     onSidebarSelect(e) {
