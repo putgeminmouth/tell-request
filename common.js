@@ -45,7 +45,7 @@ const Iterator = {
 };
 Extend([].values(), Iterator, ['filter', 'first', 'find', 'toArray', 'map', 'flatMap', 'flatten', 'distinct']);
 // Extend(new Set().values(), Iterator, ['filter', 'first', 'find', 'toArray', 'map', 'flatMap', 'flatten', 'distinct']);
-Extend(document.querySelectorAll(':scope > were_extending_nodelist_here'), Iterator, ['filter', 'find', 'toArray', 'distinct']);
+Extend(document.querySelectorAll(':scope > were_extending_nodelist_here_but_dont_want_to_match_anything'), Iterator, ['filter', 'find', 'toArray', 'distinct']);
 
 export const Element = {
     ancestors: (() => {
