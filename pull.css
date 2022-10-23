@@ -1,3 +1,7 @@
+.----cc91a745-d35c-466f-9047-3f20031fb4ae---- button {
+    user-select: none;
+}
+
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root>td {
     border: solid 2px transparent;
 }
@@ -82,9 +86,12 @@
     margin: 0;
     padding: 0;
     list-style-type: none;
+    overflow: scroll;
+    /* limit scope of position:absolute on .marker-rail */
+    position: relative;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li.visual {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol li.visual {
     display: flex;
     flex-flow: row;
     margin: 0;
@@ -92,21 +99,21 @@
     border: solid 2px transparent;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li.visual.selected {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol li.visual.selected {
     border-left: solid 2px var(--color-attention-fg);
     border-right: solid 2px var(--color-attention-fg);
     border-radius: 8px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li.droptarget {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol li.droptarget {
     height: 10px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging li.droptarget {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging ol li.droptarget {
     border: dashed 1px var(--color-accent-emphasis);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging li.droptarget.hover {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging ol li.droptarget.hover {
     border-color: var(--color-accent-emphasis);
     border-style: solid;
     background-color: var(--color-btn-outline-selected-bg);
@@ -124,7 +131,7 @@ pointer-events: none;
     fill: currentColor;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .marker {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker {
     align-self: center;
     cursor: pointer;
     font-size: 30px;
@@ -133,7 +140,7 @@ pointer-events: none;
     margin-left: -7px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .marker-rail {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker-rail {
     margin-left: initial;
     position: absolute;
     top: 0;
@@ -146,24 +153,33 @@ pointer-events: none;
     font-size: 15px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .content {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .content {
     /* makes overflow of label work as expected ¯\_(ツ)_/¯ */
     display: grid;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .context {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .context {
     color: var(--color-fg-default);
     font-weight: 400;
     font-size: 0.75em;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .label {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .label {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .toolbar {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .toolbar {
+    /* align right in flex */
+    margin-left: auto;
     display: flex;
     flex-flow: column;
-    margin-left: auto;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar .header .toolbar.navbar {
+    background: var(--color-canvas-subtle);
+    display: flex;
+    flex-flow: row;
+    padding-left: 15px;
+    border-bottom: 1px dashed var(--color-border-subtle);
 }
