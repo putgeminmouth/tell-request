@@ -1,5 +1,8 @@
 'use strict';
 
+const APP_UUID = 'cc91a745-d35c-466f-9047-3f20031fb4ae';
+export const MAGIC = `----${APP_UUID}----`;
+
 const Extend = (to, from, props) => {
     const proto = to.constructor.prototype;
     props.forEach(prop => {

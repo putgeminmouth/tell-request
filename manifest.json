@@ -8,14 +8,13 @@
     "content_scripts": [
         {
             "matches": [
-                "https://github.com/*/*/pull/*",
-                "file:///Users/d/Documents/code/prmono/src/chrome/test.html"
+                "https://github.com/*/*/pull/*"
             ],
             "js": [
                 "pull.import.js"
             ],
             "css": [
-                "pull.css"
+                "src/pull.css"
             ],
             "run_at": "document_start"
         }
@@ -23,12 +22,10 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "pull.js",
-                "github.js",
-                "common.js"
+                "src/*"
             ],
             "matches": [
-                "<all_urls>"
+                "https://github.com/*"
             ]
         }
     ]
