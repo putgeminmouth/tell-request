@@ -4,6 +4,7 @@ import { GithubApi, PullRequestPage } from './github.js';
 import { MAGIC, Opt, Promises, Try, Util, Element } from './common.js';
 import { Comment, File, FileContext, Ids, Presentation } from './model/model.js';
 import { CommentUI, DividerUI, SidebarUI } from './ui/ui.js';
+import { l10n } from './l10n.js';
 
 const parseComment = c => {
     const PARSE_REGEX = new RegExp(`^(?<before>.*?)(?:<!--\\s*)?(?:${MAGIC})(?<data>.*)(?:${MAGIC})(?:\\s*-->)?(?<after>.*)$`, 'gs');
@@ -54,8 +55,8 @@ class App {
 
         const settings = Util.createElement(`
             <div class="${MAGIC} top-toolbar">
-                <button name="edit" class="btn-octicon">📝</button>
-                <button name="view" class="btn-octicon">👁</button>
+                <button name="edit" class="btn-octicon" title="${l10n.topToolbar.editButton.title}">📝</button>
+                <button name="view" class="btn-octicon" title="${l10n.topToolbar.viewButton.title}">👁</button>
                 <button name="settings" class="btn-octicon">⚙</button>
             </div>
         `);
