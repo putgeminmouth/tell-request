@@ -107,7 +107,7 @@ export class Presentation {
         }
         this.visuals.splice(isNaN(position) ? this.visuals.length : position, 0, visual);
 
-        this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: removed } }));
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [visual], removed: removed } }));
     }
 
     removeVisual({ id }) {
@@ -116,7 +116,7 @@ export class Presentation {
 
         const removed = this.visuals.splice(existing, 1);
 
-        this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [], removed: removed } }));
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [], removed: removed } }));
     }
 
     moveVisual({ id, position }) {
@@ -126,7 +126,7 @@ export class Presentation {
         this.visuals.splice(oldIndex, 1);
         this.visuals.splice(position, 0, visual);
 
-        this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: [visual] } }));
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [visual], removed: [visual] } }));
     }
 
     findByLineNo(filename, lineNo) {
@@ -150,6 +150,6 @@ export class Presentation {
             return vv;
         });
         this.visuals = added;
-        this.events.dispatchEvent(new CustomEvent('change', { detail: { added, removed } }));
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added, removed } }));
     }
 }
