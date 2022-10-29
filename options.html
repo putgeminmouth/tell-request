@@ -2,9 +2,13 @@
     body {
         background-color: #0d1117;
         color: #c9d1d9;
+        padding-right: 20px;
+        /* TODO: horizontal scroll issues on chrome */
     }
 
-    select {
+    select,
+    input[type="text"],
+    button {
         background: transparent;
         color: inherit;
     }
@@ -73,6 +77,12 @@
         <div><input type="radio" name="openFrequency" value="auto" id="openFrequency.auto"><label for="openFrequency.auto">Open automatically as soon as the page loads</label></div>
         <div><input type="radio" name="openFrequency" value="manual" id="openFrequency.manual"><label for="openFrequency.manual">Open only when the Load button is used</label></div>
     </div>
+</div>
+
+<div class="section">
+    <div class="title">Advanced</div>
+    <div class="option"><label for="bytesInUse">Bytes used</label><input type="text" name="bytesInUse" id="bytesInUse" readonly></div>
+    <div class="option"><button name="clearStorage">Clear Storage</button></div>
 </div>
 
 <script type="module" src="options.js"></script>
