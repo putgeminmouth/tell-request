@@ -57,8 +57,8 @@ class App {
 
         const settings = Util.createElement(`
             <div class="${MAGIC} top-toolbar">
-                <button name="edit" class="btn-octicon" title="${l10n.topToolbar.editButton.title}">📝</button>
-                <button name="view" class="btn-octicon" title="${l10n.topToolbar.viewButton.title}">👁</button>
+                <button name="edit" class="btn-octicon" title="${l10n.get('topToolbar.editButton.title')}">📝</button>
+                <button name="view" class="btn-octicon" title="${l10n.get('topToolbar.viewButton.title')}">👁</button>
                 <button name="settings" class="btn-octicon">⚙</button>
             </div>
         `);
@@ -231,8 +231,9 @@ class App {
 
 let app;
 
-document.addEventListener('readystatechange', async e => {
-    if (document.readyState !== 'complete') return;
+const onDocumentLoad = async _ => {
+    l10n.setLocale(await getConfig('language'));
+
     {
         const prPage = new PullRequestPage();
         const {
@@ -256,4 +257,12 @@ document.addEventListener('readystatechange', async e => {
         });
         document.body.prepend(debug);
     }).apply();
-});
+};
+
+if (document.readyState !== 'complete')
+    document.addEventListener('readystatechange', _ => {
+        if (document.readyState !== 'complete') return;
+        onDocumentLoad();
+    });
+else
+    onDocumentLoad();
