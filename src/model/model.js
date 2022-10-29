@@ -119,6 +119,13 @@ export class Presentation {
         this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [], removed: removed } }));
     }
 
+    removeAllVisuals() {
+        const removed = this.visuals;
+        this.visuals = [];
+
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [], removed: removed } }));
+    }
+
     moveVisual({ id, position }) {
         const visual = this.visuals.find(x => x.id === id);
         const oldIndex = this.indexOf({ id });
@@ -137,6 +144,8 @@ export class Presentation {
         if (id) return this.visuals.findIndex(x => x.id === id);
         return -1;
     }
+
+    get length() { return this.visuals.length; }
 
     export() {
         return { visuals: this.visuals.map(x => x.export()) };

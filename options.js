@@ -17,13 +17,17 @@ import { getConfig, setConfig } from './src/config.js';
         option.innerHTML = l;
         if (l === initialLanguage)
             option.setAttribute('selected', 'selected');
-        document.querySelector('select[name=language').append(option);
+        document.querySelector('select[name=language]').append(option);
     });
-    document.querySelector('select[name=language').addEventListener('change', e => {
+    document.querySelector('select[name=language]').addEventListener('change', e => {
         const value = e.target.selectedOptions[0].value;
         l10n.setLocale(value);
         setConfig('language', value);
     });
 
+    document.querySelectorAll('input[name="openFrequency"]').forEach(x => x.addEventListener('change', async e => {
+        setConfig('openFrequency', e.currentTarget.value);
+    }));
+    document.querySelector(`input[name="openFrequency"][value="${await getConfig('openFrequency', 'auto')}"]`).checked = true;
 
 }).apply();
