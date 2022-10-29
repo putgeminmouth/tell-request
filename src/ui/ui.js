@@ -389,10 +389,10 @@ export class SettingsUI extends UI {
         this.rootElem.innerHTML = `
             <button name="settings" class="btn-octicon">⚙</button>
             <ol class="menu">
-                <li><button name="load" class="btn-octicon">Load</button></li>
-                <li><button name="save" class="btn-octicon edit-mode-only">Save</button></li>
-                <li><button name="edit" class="btn-octicon" title="${l10n.get('topToolbar.editButton.title')}">📝</button>
-                    <button name="view" class="btn-octicon" title="${l10n.get('topToolbar.viewButton.title')}">👁</button></li>
+                <li><button name="load" class="btn-octicon">${l10n.get('settings.loadButton.text')}</button></li>
+                <li><button name="save" class="btn-octicon edit-mode-only">${l10n.get('settings.saveButton.text')}</button></li>
+                <li><button name="edit" class="btn-octicon" title="${l10n.get('settings.editButton.title')}">📝</button>
+                    <button name="view" class="btn-octicon" title="${l10n.get('settings.viewButton.title')}">👁</button></li>
             </ol>
         `;
 
@@ -406,5 +406,9 @@ export class SettingsUI extends UI {
         this.rootElem.querySelector('button[name="save"]').addEventListener('click', _ => {
             this.events.dispatchEvent(new CustomEvent('save'));
         });
+    }
+
+    setEditMode(e) {
+        this.rootElem.querySelector('button[name="edit"]').click();
     }
 }

@@ -25,35 +25,56 @@
         border: solid 1px #30363d;
         padding: 5px 10px 10px 10px;
         margin: 0px 0px 20px 0px;
-        display: table;
         width: 100%;
     }
 
-    .section>.title {
+    .section:not(.table) {
+        padding-top: 0px;
+    }
+
+    .table {
+        display: table;
+    }
+
+    .section .title {
         padding: 5px 5px;
-        background-color: #30363d;
+        font-weight: bold;
+    }
+
+    .section:not(.table) .title {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .table>.title:first-child {
         display: table-caption;
     }
 
-    .section .option {
+    .section>.title:first-child {
+        background-color: #30363d;
+    }
+
+    .table>.option {
         display: table-row;
     }
 
-    .section .option * {
+    .section .option {}
+
+    .table .option>* {
         display: table-cell;
         margin-bottom: 10px;
     }
 </style>
 
-<div class="section">
+<div class="section table">
     <div class="title">Saving</div>
     <div class="radio-group">
         <div><input type="radio" name="saveFrequency" value="auto" id="saveFrequency.auto"><label for="saveFrequency.auto">Save changes automatically as soon as they occur</label></div>
-        <div><input type="radio" name="saveFrequency" value="manual" id="saveFrequency.manual"><label for="saveFrequency.manual">Save changes only when the Save button is used</label></div>
+        <div><input type="radio" name="saveFrequency" value="manual" id="saveFrequency.manual"><label for="saveFrequency.manual">Save changes only when the button is used</label></div>
     </div>
 </div>
 
-<div class="section">
+<div class="section table">
     <div class="title">Appearance</div>
 
     <div class="option">
@@ -72,14 +93,24 @@
 <div class="section">
     <div class="title">Behavior</div>
 
-    <div class="title">Loading</div>
-    <div class="radio-group">
-        <div><input type="radio" name="openFrequency" value="auto" id="openFrequency.auto"><label for="openFrequency.auto">Open automatically as soon as the page loads</label></div>
-        <div><input type="radio" name="openFrequency" value="manual" id="openFrequency.manual"><label for="openFrequency.manual">Open only when the Load button is used</label></div>
+    <div class="option">
+        <div class="title">Loading</div>
+        <div class="radio-group">
+            <div><input type="radio" name="openFrequency" value="auto" id="openFrequency.auto"><label for="openFrequency.auto">Open automatically as soon as the page loads</label></div>
+            <div><input type="radio" name="openFrequency" value="manual" id="openFrequency.manual"><label for="openFrequency.manual">Open only when the button is used</label></div>
+        </div>
+    </div>
+    <hr>
+    <div class="option">
+        <div class="title">Editing</div>
+        <div class="radio-group">
+            <div><input type="radio" name="editFrequency" value="auto" id="editFrequency.auto"><label for="editFrequency.auto">Enter Edit-Mode automatically when I am the author</label></div>
+            <div><input type="radio" name="editFrequency" value="manual" id="editFrequency.manual"><label for="editFrequency.manual">Enter Edit-Mode only when the button is ued</label></div>
+        </div>
     </div>
 </div>
 
-<div class="section">
+<div class="section table">
     <div class="title">Advanced</div>
     <div class="option"><label for="bytesInUse">Bytes used</label><input type="text" name="bytesInUse" id="bytesInUse" readonly></div>
     <div class="option"><button name="clearStorage">Clear Storage</button></div>

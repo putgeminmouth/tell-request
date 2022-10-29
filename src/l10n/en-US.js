@@ -16,9 +16,6 @@ export const strings = {
         navNextButton: {
             title: 'Navigate to next item'
         },
-        saveButton: {
-            title: 'Save'
-        },
         markerHandle: {
             title: 'Drag to reorder items'
         }
@@ -44,12 +41,18 @@ export const strings = {
             }
         }
     },
-    topToolbar: {
+    settings: {
         editButton: {
             title: 'Enter Edit-Mode'
         },
         viewButton: {
             title: 'Enter View-Mode'
-        }
+        },
+        loadButton: {
+            text: 'Load'
+        },
+        saveButton: {
+            text: 'Save'
+        },
     }
 };

@@ -30,6 +30,13 @@ import { getConfig, setConfig, clearConfig, getConfigBytesInUse } from './src/co
     }
 
     {
+        document.querySelectorAll('input[name="editFrequency"]').forEach(x => x.addEventListener('change', async e => {
+            setConfig('editFrequency', e.currentTarget.value);
+        }));
+        document.querySelector(`input[name="editFrequency"][value="${await getConfig('editFrequency')}"]`).checked = true;
+    }
+
+    {
         document.querySelectorAll('input[name="openFrequency"]').forEach(x => x.addEventListener('change', async e => {
             setConfig('openFrequency', e.currentTarget.value);
         }));
