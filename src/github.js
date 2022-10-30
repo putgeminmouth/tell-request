@@ -160,5 +160,9 @@ export class PullRequestPage {
     getAuthorGibhubId() {
         return document.querySelector('a.author')?.getAttribute('href').replace(/[^/]*\//, '');
     }
+
+    getCurrentUserGithubId() {
+        return document.querySelector('meta[name="user-login"]')?.getAttribute('content');
+    }
 }
 
