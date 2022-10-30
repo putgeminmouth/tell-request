@@ -29,12 +29,15 @@ const renderComment = c => {
 
 class App {
     constructor({ github, prPage }) {
+        // <hack>
+        this.maybePersistOnPresentationChange = this.maybePersistOnPresentationChange.bind(this);
+        // </hack>
         this.github = github;
         this.prPage = prPage;
         this.events = Util.createEventTarget();
         this.presentation = new Presentation();
         this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
-        this.presentation.events.addEventListener('change', e => this.maybePersistOnPresentationChange(e));
+        this.presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
 
         this.files = [];
 
@@ -57,6 +60,8 @@ class App {
         const settings = this.settings = new SettingsUI();
         settings.events.addEventListener('load', e => this.onSettingsLoad(e));
         settings.events.addEventListener('save', e => this.onSettingsSave(e));
+        settings.events.addEventListener('import', e => this.onSettingsImport(e));
+        settings.events.addEventListener('export', e => this.onSettingsExport(e));
         document.querySelector('.diffbar > :last-child').before(settings.rootElem);
 
         this.initAddVisualButtons();
@@ -73,6 +78,7 @@ class App {
         // this.sidebar.reset();
         // this.divider.reset();
         // this.settings.reset();
+        this.presentation.events.removeEventListener('change', this.maybePersistOnPresentationChange);
 
         if (this.presentation.length) {
             const cleanupDone = Util.waitEvent(this.presentation.events, 'change');
@@ -97,8 +103,9 @@ class App {
         const presentation = new Presentation();
         presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         presentation.import(data);
-        presentation.events.addEventListener('change', e => this.maybePersistOnPresentationChange(e));
+        presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
         this.presentation = presentation;
+        this.mostRecentImportData = data;
     }
 
     export() {
@@ -237,6 +244,22 @@ class App {
         const currentValue = issueForm.editForm.querySelector('textarea').value;
         const parsed = parseComment(currentValue);
         this.import(parsed.data);
+    }
+
+    async onSettingsExport(e) {
+        const data = this.export();
+        e.detail.setExportData(data);
+    }
+
+    async onSettingsImport(e) {
+        try {
+            await this.import(e.detail.data);
+            e.detail.promise.resolve();
+        } catch (err) {
+            // our only validation is in the execution so at best we can restore like this
+            await this.import(this.mostRecentImportData);
+            e.detail.promise.reject(err);
+        }
     }
 }
 

@@ -267,23 +267,34 @@ pointer-events: none;
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"] {}
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu {
-    display: none;
     position: absolute;
     list-style-type: none;
     padding: 5px 5px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar:not(.visible) ol.menu {
+    display: none;
 }
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar:hover ol.menu {
     display: block;
 }
 
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar.visible ol.menu {
+    display: block;
+}
+
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li {
     margin-bottom: 0;
     padding: 5px 0px;
-    border-bottom: dashed 1px var(--color-border-muted);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:hover {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li.divider {
+    border-bottom: solid 1px var(--color-border-default);
+    padding: 0;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:not(.divider):hover {
     background-color: var(--color-canvas-subtle);
 }
 
@@ -307,6 +318,35 @@ body.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode .----cc91a745-d35c-4
 
 body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="view"] {
     display: none;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar dialog .content {
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar dialog .error {
+    color: red;
+    font-style: italic;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar dialog textarea {
+    flex-grow: 1;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar dialog .button-bar {
+    display: flex;
+    flex-flow: row;
+    justify-content: end;
+    margin-top: 5px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar dialog:modal {
+    min-width: 320px;
+    min-height: 240px;
+    display: flex;
+    flex-flow: column;
 }
 
 /* edit mode */

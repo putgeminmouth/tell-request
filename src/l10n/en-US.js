@@ -54,5 +54,37 @@ export const strings = {
         saveButton: {
             text: 'Save'
         },
+        importButton: {
+            text: 'Import'
+        },
+        exportButton: {
+            text: 'Export'
+        },
+        importDialog: {
+            title: {
+                text: 'Import'
+            },
+            textarea: {
+                placeholder: 'Enter JSON from an export'
+            },
+            acceptButton: {
+                text: 'Import'
+            },
+            cancelButton: {
+                text: 'Cancel'
+            },
+            errors: {
+                invalidJson: { text: 'Invalid JSON: ' },
+                importFailed: { text: 'Import failed: ' },
+            }
+        },
+        exportDialog: {
+            title: {
+                text: 'Export'
+            },
+            closeButton: {
+                text: 'Close'
+            }
+        }
     }
 };
