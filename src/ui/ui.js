@@ -396,8 +396,8 @@ export class SettingsUI extends UI {
                 <li class="divider">
                 <li><button name="import" class="btn-octicon">${l10n.get('settings.importButton.text')}</button></li>
                 <li><button name="export" class="btn-octicon">${l10n.get('settings.exportButton.text')}</button></li>
-                <li class="divider">
-                <li><button name="edit" class="btn-octicon" title="${l10n.get('settings.editButton.title')}">📝</button>
+                <li class="divider edit-mode-possible-visible-only">
+                <li class="edit-mode-possible-visible-only"><button name="edit" class="btn-octicon" title="${l10n.get('settings.editButton.title')}">📝</button>
                     <button name="view" class="btn-octicon" title="${l10n.get('settings.viewButton.title')}">👁</button></li>
             </ol>
             <dialog name="import">

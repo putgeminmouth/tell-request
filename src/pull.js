@@ -29,8 +29,8 @@ const renderComment = c => {
 
 export class Metadata {
     constructor(data) {
-        this.version = data.version || 0;
-        this.lastModifiedDate = data.lastModifiedDate;
+        this.version = data?.version || 0;
+        this.lastModifiedDate = data?.lastModifiedDate;
     }
 }
 
@@ -43,6 +43,7 @@ class App {
         this.github = github;
         this.prPage = prPage;
         this.events = Util.createEventTarget();
+        this.metadata = new Metadata();
         this.presentation = new Presentation();
         this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         this.presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
@@ -54,7 +55,17 @@ class App {
 
     async init(document) {
         const sidebar = this.sidebar = new SidebarUI();
-        document.querySelector('diff-layout').append(sidebar.rootElem);
+        if (document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main')) {
+            document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.rootElem);
+        } else {
+            // pretty hackish...
+            const e = Util.createElement('<div side="left" responsive="true" data-target="diff-layout.layoutContainer" data-view-component="true" class="Layout Layout--flowRow-until-lg Layout--gutter-condensed  hx_Layout wants-full-width-container Layout--sidebarPosition-start Layout--sidebarPosition-flowRow-none"></div>');
+            const diffView = document.querySelector('.diff-view');
+            diffView.style.gridColumn = '1 / span 3';
+            diffView.replaceWith(e);
+            e.append(diffView);
+            e.append(sidebar.rootElem);
+        }
 
         const divider = this.divider = new DividerUI();
         divider.events.addEventListener('resize', e => this.onDividerResize(e));
@@ -80,6 +91,9 @@ class App {
         }
         if (await getConfig('editFrequency') === 'auto' && this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId()) {
             await settings.setEditMode();
+        }
+        if (await getConfig('editOnlyOwn') && this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId()) {
+            document.body.classList.add('edit-mode-possible');
         }
     }
 
