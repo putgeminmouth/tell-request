@@ -351,6 +351,13 @@ body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .----cc91a745-
 
 /* edit mode */
 
-body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .edit-mode-only {
+body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .edit-mode-visible-only {
     display: none;
+}
+
+body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .edit-mode-enabled-only {
+    font-style: italic;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: brightness(0.75);
 }
