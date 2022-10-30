@@ -154,7 +154,7 @@ export class PullRequestPage {
     }
 
     getRandomCommentId() {
-        return Util.randomItem(document.body.querySelectorAll('.timeline-comment-group'))?.id.slice(1);
+        return Util.randomItem(document.body.querySelectorAll('.timeline-comment-group'))?.id.slice(1) || Math.random().toString();
     }
 
     getAuthorGibhubId() {
