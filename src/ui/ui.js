@@ -431,7 +431,7 @@ export class SettingsUI extends UI {
         });
 
         this.rootElem.querySelectorAll('.menu button[name="edit"],button[name="view"]').forEach(x => x.addEventListener('click', _ => {
-            document.body.classList.toggle(`${MAGIC}_edit-mode`);
+            this.events.dispatchEvent(new CustomEvent('toggleEditMode'));
         }));
 
         this.rootElem.querySelector('.menu button[name="load"]').addEventListener('click', _ => {

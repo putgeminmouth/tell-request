@@ -54,7 +54,7 @@ class App {
 
     async init(document) {
         const sidebar = this.sidebar = new SidebarUI();
-        document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.rootElem);
+        document.querySelector('diff-layout').append(sidebar.rootElem);
 
         const divider = this.divider = new DividerUI();
         divider.events.addEventListener('resize', e => this.onDividerResize(e));
@@ -70,6 +70,7 @@ class App {
         settings.events.addEventListener('save', e => this.onSettingsSave(e));
         settings.events.addEventListener('import', e => this.onSettingsImport(e));
         settings.events.addEventListener('export', e => this.onSettingsExport(e));
+        settings.events.addEventListener('toggleEditMode', e => this.onSettingsToggleEditMode(e));
         document.querySelector('.diffbar > :last-child').before(settings.rootElem);
 
         this.initAddVisualButtons();
@@ -260,7 +261,8 @@ class App {
         const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
         const currentValue = issueForm.editForm.querySelector('textarea').value;
         const parsed = parseComment(currentValue);
-        this.import(parsed.data);
+        if (parsed)
+            this.import(parsed.data);
     }
 
     async onSettingsExport(e) {
@@ -276,6 +278,20 @@ class App {
             // our only validation is in the execution so at best we can restore like this
             await this.import(this.mostRecentImportData);
             e.detail.promise.reject(err);
+        }
+    }
+
+    onSettingsToggleEditMode(e) {
+        this.toggleEditMode();
+    }
+
+    toggleEditMode(e) {
+        const className = `${MAGIC}_edit-mode`;
+        if (document.body.classList.contains(className)) {
+            document.body.classList.remove(`${MAGIC}_edit-mode`);
+        } else {
+            if (this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId())
+                document.body.classList.add(`${MAGIC}_edit-mode`);
         }
     }
 }

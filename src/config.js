@@ -4,6 +4,7 @@ const defaults = {
     saveFrequency: 'auto',
     openFrequency: 'auto',
     editFrequency: 'auto',
+    editOnlyOwn: true,
     language: 'en-US',
 };
 
