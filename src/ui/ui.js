@@ -188,7 +188,7 @@ export class CommentUI extends VisualUI {
         if (this.textarea.value === this.previousPreviewValue) return; // avoid api calls
         const text = this.textarea.value;
         const commentId = this.prPage.getRandomCommentId();
-        const rendered = await this.github.renderMarkdown({ authenticityToken: await this.github.pullFiles.fetchCommentCsrfToken(commentId), text });
+        const rendered = await this.github.renderMarkdown({ text });
         this.rootElem.querySelector('.comment-body').innerHTML = rendered;
         this.previousPreviewValue = text;
     }

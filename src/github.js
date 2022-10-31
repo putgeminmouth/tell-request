@@ -120,6 +120,7 @@ export class GithubApi {
         this.pullUrl = pullUrl;
         this.pullFiles = new PullFilesApi(pullUrl);
         this.issue = new IssueApi(repositoryUrl);
+        this.previewAuthenticityToken = null;
     }
     async renderMarkdown({ authenticityToken, text }) {
         if (!text) return '';
@@ -128,7 +129,7 @@ export class GithubApi {
         // ?repository=545729983
         // form: comment_id=991686173
         const params = [
-            ['authenticity_token', authenticityToken],
+            ['authenticity_token', authenticityToken || this.previewAuthenticityToken],
             ['text', text]
         ];
         const response = await fetch(`/preview`, {
@@ -166,6 +167,17 @@ export class PullRequestPage {
 
     getCurrentUserGithubId() {
         return document.querySelector('meta[name="user-login"]')?.getAttribute('content');
+    }
+
+    getPreviewAuthenticityToken() {
+        const button = document.querySelector('button.add-line-comment');
+        const buttonTR = button.ancestors().find(x => x.tagName === 'TR');
+        document.querySelector('button.add-line-comment').click();
+
+        const nextTR = buttonTR.nextElementSibling;
+        const authenticityToken = nextTR.querySelector('form[action$="/create"] input.js-data-preview-url-csrf').value;
+        document.querySelector('[data-confirm-cancel-text]').click();
+        return authenticityToken;
     }
 }
 
