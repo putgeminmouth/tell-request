@@ -1,11 +1,11 @@
 'use strict';
 
-import { GithubApi, PullRequestPage } from './github.js';
-import { MAGIC, Opt, Promises, Try, Util, Element } from './common.js';
-import { Comment, File, FileContext, Ids, Presentation } from './model/model.js';
-import { CommentUI, DividerUI, SettingsUI, SidebarUI } from './ui/ui.js';
-import { l10n } from './l10n.js';
-import { getConfig } from './config.js';
+import { GithubApi, PullRequestPage } from '../src/github.js';
+import { MAGIC, Opt, Promises, Try, Util, Element } from '../src/common.js';
+import { Comment, File, FileContext, Ids, Presentation } from '../src/model/model.js';
+import { CommentUI, DividerUI, SettingsUI, SidebarUI } from '../src/ui/ui.js';
+import { l10n } from '../src/l10n.js';
+import { getConfig } from '../src/config.js';
 
 const parseComment = c => {
     const PARSE_REGEX = new RegExp(`^(?<before>.*?)(?:<!--\\s*)?(?:${MAGIC})(?<data>.*)(?:${MAGIC})(?:\\s*-->)?(?<after>.*)$`, 'gs');
