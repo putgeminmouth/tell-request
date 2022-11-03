@@ -186,8 +186,21 @@ export class PullRequestPage {
     getFileElementAtPosition(position) {
         return Array.from(document.querySelectorAll(`#files .file`)).slice(position, position + 1).first();
     }
-    getFileElements() {
-        return document.querySelectorAll('#files .file');
+    moveFileToPosition(filename, position) {
+        const toMove = this.getFileElementForFile(filename);
+        if (position === Array.from(this.getFiles().elements).length)
+            toMove.parentElement.append(toMove);
+        else {
+            const dest = this.getFileElementAtPosition(position);
+            dest.before(toMove);
+        }
+    }
+    getFiles() {
+        const elements = document.querySelectorAll('#files .file');
+        return {
+            elements,
+            getFilenames: () => elements.map(x => x.querySelector('.file-header')).map(x => x.getAttribute('data-path'))
+        };
     }
 }
 
