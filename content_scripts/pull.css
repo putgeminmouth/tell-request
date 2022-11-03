@@ -124,15 +124,19 @@
     border-radius: 8px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol li.droptarget {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol li.droptarget,
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree ul li.droptarget {
     height: 10px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging ol li.droptarget {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging ol li.droptarget,
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree.dragging ul li.droptarget {
+
     border: dashed 1px var(--color-accent-emphasis);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging ol li.droptarget.hover {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.dragging ol li.droptarget.hover,
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree.dragging ul li.droptarget.hover {
     border-color: var(--color-accent-emphasis);
     border-style: solid;
     background-color: var(--color-btn-outline-selected-bg);
@@ -146,7 +150,8 @@ pointer-events: none;
 */
 /* .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li *:nth-child(1){ grid-co */
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker,
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree ul .marker {
     align-self: center;
     cursor: pointer;
     font-size: 30px;
@@ -155,7 +160,8 @@ pointer-events: none;
     margin-left: -7px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker-rail {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker-rail,
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree ul .marker-rail {
     margin-left: initial;
     position: absolute;
     top: 0;

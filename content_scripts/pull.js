@@ -3,7 +3,7 @@
 import { GithubApi, PullRequestPage } from '../src/github.js';
 import { MAGIC, Opt, Promises, Try, Util, Element } from '../src/common.js';
 import { Comment, File, FileContext, Ids, Presentation } from '../src/model/model.js';
-import { CommentUI, DividerUI, SettingsUI, SidebarUI } from '../src/ui/ui.js';
+import { CommentUI, DividerUI, SettingsUI, SidebarUI, GithubFileTree } from '../src/ui/ui.js';
 import { l10n } from '../src/l10n.js';
 import { getConfig } from '../src/config.js';
 
@@ -88,6 +88,12 @@ class App {
         settings.events.addEventListener('export', e => this.onSettingsExport(e));
         settings.events.addEventListener('toggleEditMode', e => this.onSettingsToggleEditMode(e));
         document.querySelector('.diffbar > :last-child').before(settings.rootElem);
+
+        let githubFileTree = document.querySelector('file-tree');
+        if (githubFileTree) {
+            githubFileTree = this.githubFileTree = new GithubFileTree(githubFileTree);
+            githubFileTree.events.addEventListener('reorder', e => this.onGithubFileTreeReorder(e));
+        }
 
         this.initAddVisualButtons();
 
@@ -248,6 +254,18 @@ class App {
         const { id, newPosition } = e.detail;
         this.presentation.moveVisual({ id, position: newPosition });
         this.sidebar.move(id, newPosition);
+    }
+
+    async onGithubFileTreeReorder(e) {
+        const { id, newPosition: position, toLast, filename } = e.detail;
+        this.githubFileTree.move({ id, position });
+        const toMove = this.prPage.getFileElementForFile(filename);
+        if (position === Array.from(this.prPage.getFileElements()).length)
+            toMove.parentElement.append(toMove);
+        else {
+            const dest = this.prPage.getFileElementAtPosition(position);
+            dest.before(toMove);
+        }
     }
 
     onSelect(e) {
