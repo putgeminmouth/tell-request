@@ -85,6 +85,9 @@ export const strings = {
             closeButton: {
                 text: 'Close'
             }
+        },
+        shortcutsButton: {
+            title: 'Click this to temporarily enable navigation shortcuts'
         }
     }
 };

@@ -15,6 +15,10 @@
     grid-auto-flow: column !important;
 }
 
+.btn-octicon:focus {
+    color: var(--color-accent-fg);
+}
+
 /* ui/visual */
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root>td {
@@ -278,9 +282,13 @@ pointer-events: none;
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar {
     margin-right: 20px;
+    display: flex;
+    flex-flow: row;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"] {}
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar svg {
+    width: 32px;
+}
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu {
     position: absolute;
@@ -288,15 +296,16 @@ pointer-events: none;
     padding: 5px 5px;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar:not(.visible) ol.menu {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu:not(.visible) {
     display: none;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar:hover ol.menu {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]:hover+ol.menu {
     display: block;
+
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar.visible ol.menu {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]+ol.menu.visible {
     display: block;
 }
 
