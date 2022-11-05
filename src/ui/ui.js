@@ -20,14 +20,15 @@ class UI {
 }
 
 class VisualUI extends UI {
-    constructor(rootElem) {
+    constructor(rootElem, model) {
         super(rootElem);
+        this.model = model;
         rootElem.classList.add('visual-root');
     }
 }
 export class CommentUI extends VisualUI {
     constructor({ github, prPage, fileElem, value }) {
-        super(Util.createElement(`<tr class="${MAGIC} visual-root visual-comment">`));
+        super(Util.createElement(`<tr class="${MAGIC} visual-root visual-comment">`), value);
         this.github = github;
         this.prPage = prPage;
         this.fileElem = fileElem;

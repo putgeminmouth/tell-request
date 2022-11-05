@@ -49,6 +49,13 @@ import { getConfig, setConfig, clearConfig, getConfigBytesInUse } from './src/co
     }
 
     {
+        document.querySelectorAll('input[name="enableGlobalKeyboardShortcuts"]').forEach(x => x.addEventListener('change', async e => {
+            setConfig('enableGlobalKeyboardShortcuts', e.currentTarget.checked);
+        }));
+        document.querySelector(`input[name="enableGlobalKeyboardShortcuts"]`).checked = !!await getConfig('enableGlobalKeyboardShortcuts');
+    }
+
+    {
         try {
             document.querySelector('input[name="bytesInUse"]').value = await getConfigBytesInUse();
         } catch (e) {
