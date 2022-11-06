@@ -7,7 +7,15 @@ import { Shortcut } from './src/ui/shortcut.js';
 import './src/template.js';
 
 const init = async () => {
-
+    // totally pointless but we try to detect whether mode of open_in_tab:true (as per manifest) and hide the icon if its not needed
+    if (await chrome.tabs.getCurrent()) {
+        document.querySelector('button[name="openInNewTab"]').style.display = 'none';
+    } else {
+        document.querySelector('button[name="openInNewTab"]').addEventListener('click', _ => {
+            window.open(chrome.runtime.getURL("options.html"));
+            window.close();
+        });
+    }
     {
         document.querySelectorAll('input[name="saveFrequency"]').forEach(x => x.addEventListener('change', async e => {
             setConfig('saveFrequency', e.currentTarget.value);
