@@ -313,8 +313,8 @@ class App {
             if (existingUI) {
                 existingUI.setText(x.text);
             } else {
-                const tr = document.querySelector(`div.file .diff-table tr td[data-line-number="${x.context.lineNo}"]`).ancestors(x => x.tagName === 'TR').first();
-                const fileElem = tr.ancestors().find(x => x.classList.contains('file'));
+                const fileElem = this.prPage.getFileElementForFile(x.context.file.filename);
+                const tr = fileElem.querySelector(`.diff-table tr td[data-line-number="${x.context.lineNo}"]`).ancestors(x => x.tagName === 'TR').first();
                 const commentUI = this.createCommentUI({ fileElem, value: x })
                 tr.after(commentUI.rootElem);
                 commentUI.setPreviewTab(); // no need to await
