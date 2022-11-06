@@ -181,7 +181,7 @@ export class PullRequestPage {
     }
 
     getFileElementForFile(filename) {
-        return document.querySelector(`#files .file:has(.file-header[data-path="${filename}"])`);
+        return document.querySelector(`#files .file .file-header[data-path="${filename}"]`).ancestors(x => x.classList.contains('file')).first();
     }
     getFileElementAtPosition(position) {
         return Array.from(document.querySelectorAll(`#files .file`)).slice(position, position + 1).first();
