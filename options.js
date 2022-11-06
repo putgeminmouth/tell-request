@@ -1,7 +1,9 @@
 'use strict';
 
 import { l10n } from './src/l10n.js';
-import { getConfig, setConfig, clearConfig, getConfigBytesInUse } from './src/config.js';
+import { getConfig, setConfig, updateConfig, clearConfig, getConfigBytesInUse } from './src/config.js';
+import './src/ui/svg.js';
+import { Shortcut } from './src/ui/shortcut.js';
 
 (async () => {
 
@@ -53,6 +55,73 @@ import { getConfig, setConfig, clearConfig, getConfigBytesInUse } from './src/co
             setConfig('enableGlobalKeyboardShortcuts', e.currentTarget.checked);
         }));
         document.querySelector(`input[name="enableGlobalKeyboardShortcuts"]`).checked = !!await getConfig('enableGlobalKeyboardShortcuts');
+
+        const customizeDialog = document.querySelector('dialog[name="keyboardShortcuts"]');
+        document.querySelector('button[name="customize"]').addEventListener('click', _ => {
+            customizeDialog.showModal();
+        });
+
+        {
+            const dialog = customizeDialog;
+            dialog.querySelector('button[name="close"]').addEventListener('click', _ => dialog.close());
+            const setupShortcut = async name => {
+                const { enabled: initialEnabled, shortcut: initialShortcutJson } = (await getConfig(`shortcuts`))[name] || {};
+                console.log(JSON.stringify(await getConfig(`shortcuts`)), initialEnabled, JSON.stringify(initialShortcutJson));
+                let initialShortcut = new Shortcut(initialShortcutJson);
+
+                const enabledInput = dialog.querySelector(`input[name="shortcuts.${name}.enabled"]`);
+                enabledInput.checked = !!initialEnabled;
+                enabledInput.addEventListener('change', async _ => {
+                    await updateConfig(`shortcuts`, x => {
+                        x[name].enabled = enabledInput.checked;
+                    });
+
+                });
+
+                const valueInput = dialog.querySelector(`input[name="shortcuts.${name}.value"]`);
+                valueInput.value = initialShortcut?.toDisplayString() ?? '';
+                valueInput.setAttribute('placeholder', 'Enter a new shortcut');
+
+                dialog.querySelector(`button[name="shortcuts.${name}"]`).addEventListener('click', _ => {
+                    const cancel = () => {
+                        aborter.abort();
+                        valueInput.disabled = true;
+                        valueInput.value = initialShortcut.toDisplayString();
+                    };
+                    const aborter = new AbortController();
+                    valueInput.addEventListener('blur', _ => {
+                        cancel();
+                    }, { signal: aborter.signal });
+
+                    valueInput.addEventListener('keydown', e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }, { signal: aborter.signal });
+
+                    valueInput.addEventListener('keyup', async e => {
+                        aborter.abort();
+
+                        const parsed = Shortcut.parseEvent(e);
+                        if (!parsed.key || parsed.key === 'Escape') {
+                            cancel();
+                            return;
+                        }
+                        const shortcut = new Shortcut(parsed);
+                        initialShortcut = shortcut;
+                        valueInput.value = shortcut.toDisplayString();
+                        valueInput.disabled = true;
+                        await updateConfig(`shortcuts`, x => {
+                            x[name].shortcut = shortcut.toJSON();
+                        });
+                    }, { signal: aborter.signal });
+                    valueInput.value = '';
+                    valueInput.disabled = false;
+                    valueInput.focus();
+                });
+            };
+            setupShortcut('navPrev');
+            setupShortcut('navNext');
+        }
     }
 
     {

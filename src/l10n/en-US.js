@@ -87,7 +87,7 @@ export const strings = {
             }
         },
         shortcutsButton: {
-            title: 'Click this to temporarily enable navigation shortcuts'
+            title: 'Enable keyboard shortcuts while this is active'
         }
     }
 };

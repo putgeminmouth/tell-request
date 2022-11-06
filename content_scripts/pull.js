@@ -4,6 +4,7 @@ import { GithubApi, PullRequestPage } from '../src/github.js';
 import { MAGIC, Opt, Promises, Try, Util, Element } from '../src/common.js';
 import { Comment, File, FileContext, Ids, Presentation } from '../src/model/model.js';
 import { CommentUI, DividerUI, SettingsUI, SidebarUI, GithubFileTree } from '../src/ui/ui.js';
+import { Shortcut } from '../src/ui/shortcut.js';
 import { l10n } from '../src/l10n.js';
 import { getConfig } from '../src/config.js';
 
@@ -35,8 +36,17 @@ export class Metadata {
 }
 
 class KeyboardShortcutHandler {
-    constructor(app) {
+    static load = async (app) => {
+        const arr = Object.entries(await getConfig('shortcuts'))
+            .filter(([_, v]) => v.enabled)
+            .map(([k, v]) => [k, new Shortcut(v.shortcut)]);
+        const obj = Object.fromEntries(arr);
+        return new KeyboardShortcutHandler(app, obj);
+    }
+
+    constructor(app, shortcuts) {
         this.app = app;
+        this.shortcuts = shortcuts;
     }
 
     actionNavigatePrevious() {
@@ -64,9 +74,22 @@ class KeyboardShortcutHandler {
             app.selectVisual({ index: index + 1 });
     }
 
+    maybeShortcut(e) {
+        const [name, shortcut] = Object.entries(this.shortcuts).find(([_, v]) => v.testEvent(e)) || [];
+        if (!shortcut) return [];
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return [name, shortcut];
+    }
+
     handle(e) {
-        if (e.key === 'ArrowLeft') return this.actionNavigatePrevious();
-        if (e.key === 'ArrowRight') return this.actionNavigateNext();
+        const [name, shortcut] = this.maybeShortcut(e);
+        if (!shortcut) return;
+        switch (name) {
+            case 'navPrev': return this.actionNavigatePrevious();
+            case 'navNext': return this.actionNavigateNext();
+        }
     }
 }
 
@@ -82,8 +105,6 @@ class App {
         this.presentation = new Presentation();
         this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         this.presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
-
-        this.keyboardShortcuts = new KeyboardShortcutHandler();
 
         this.events.addEventListener('select', e => this.onSelect(e));
     }
@@ -132,6 +153,8 @@ class App {
 
         this.initAddVisualButtons();
 
+        this.keyboardShortcuts = await KeyboardShortcutHandler.load(this);
+
         if (await getConfig('openFrequency') === 'auto') {
             await this.onSettingsLoad();
         }
@@ -144,11 +167,9 @@ class App {
 
         {
             this.settings.shortcutsElement.addEventListener('keydown', e => {
-                e.stopPropagation();
                 this.keyboardShortcuts.handle(e);
             });
             if (await getConfig('enableGlobalKeyboardShortcuts')) {
-                e.stopPropagation();
                 document.addEventListener('keydown', e => {
                     this.keyboardShortcuts.handle(e);
                 });

@@ -61,6 +61,8 @@
         margin-bottom: 10px;
     }
 
+    .option {}
+
     .table>.option {
         display: table-row;
         padding: 0px 5px;
@@ -70,6 +72,44 @@
 
     .table .option>* {
         display: table-cell;
+    }
+
+    dialog:modal {
+        background-color: #354152;
+        color: inherit;
+        display: flex;
+        flex-flow: column;
+    }
+
+    dialog .button-bar {
+        display: flex;
+        flex-flow: row;
+        justify-content: end;
+        margin-top: 5px;
+    }
+
+
+    dialog[name="keyboardShortcuts"] div.shortcut {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+    }
+
+    dialog[name="keyboardShortcuts"] div.shortcut>label {
+        margin-left: 5px;
+    }
+
+    dialog[name="keyboardShortcuts"] div.shortcut>input {
+        user-select: none;
+    }
+
+    dialog[name="keyboardShortcuts"] div.shortcut>button {
+        width: 1.5em;
+        color: inherit;
+        fill: currentColor;
+        padding: 0;
+        margin: 4px;
+        background-color: inherit;
     }
 </style>
 
@@ -127,6 +167,25 @@
     <div class="option">
         <div class="title">Global keyboard shortcuts</div>
         <div><input type="checkbox" name="enableGlobalKeyboardShortcuts" id="enableGlobalKeyboardShortcuts"><label for="enableGlobalKeyboardShortcuts">Enable global keyboard shortcuts</label></div>
+        <div><button name="customize" style="margin-left: 5px; margin-top: 5px">Customize</button></div>
+        <dialog name="keyboardShortcuts">
+            <div class="title">Keyboard Shortcuts</div>
+            <div class="shortcut">
+                <input type="checkbox" name="shortcuts.navPrev.enabled">
+                <input type="text" name="shortcuts.navPrev.value" id="shortcuts.navPrev" readonly disabled>
+                <button name="shortcuts.navPrev">&#x2022;</button>
+                <label for="shortcuts.navPrev">Navigate to the previous item</label>
+            </div>
+            <div class="shortcut">
+                <input type="checkbox" name="shortcuts.navNext.enabled">
+                <input type="text" name="shortcuts.navNext.value" id="shortcuts.navNext" readonly disabled>
+                <button name="shortcuts.navNext">&#x2022;</button>
+                <label for="shortcuts.navNext">Navigate to the next item</label>
+            </div>
+            <div class="button-bar">
+                <button name="close" class="btn">Close</button>
+            </div>
+        </dialog>
     </div>
 
     <hr>
@@ -135,8 +194,8 @@
 <div class="section">
     <div class="title">Advanced</div>
     <div class="table">
-        <div class="option"><label for="bytesInUse">Bytes used</label><input type="text" name="bytesInUse" id="bytesInUse" readonly></div>
-        <div class="option"><button name="clearStorage">Clear Storage</button></div>
+        <div class="option"><label for="bytesInUse">Storage bytes used</label><input type="text" name="bytesInUse" id="bytesInUse" readonly></div>
+        <div class="option"><button name="clearStorage">Clear storage</button><label>(Lose all settings!)</label></div>
     </div>
 </div>
 
