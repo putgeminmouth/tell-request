@@ -293,7 +293,8 @@ pointer-events: none;
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu {
     position: absolute;
     list-style-type: none;
-    padding: 5px 5px;
+    padding: 0;
+    margin: 0;
     display: none;
 }
 
@@ -314,7 +315,7 @@ pointer-events: none;
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li {
     margin-bottom: 0;
-    padding: 5px 0px;
+    padding: 0px;
 }
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li.divider {
@@ -326,18 +327,15 @@ pointer-events: none;
     background-color: var(--color-canvas-subtle);
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:first-of-type {
-    padding-top: 0px;
-}
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:first-of-type {}
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:last-of-type {
-    padding-bottom: 0px;
-    border-bottom: none;
-}
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:last-of-type {}
 
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li button {
-    margin-left: 0px;
+    width: 100%;
+    margin: 0;
+    padding: 10px 5px;
 }
 
 body.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="edit"] {

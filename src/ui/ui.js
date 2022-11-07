@@ -394,7 +394,7 @@ export class SettingsUI extends UI {
                 ${SVG.Keyboard}
             </button>
             <div style="position:relative">
-                <button name="settings" class="btn-octicon">
+                <button name="settings" class="btn-octicon" title=${l10n.get('settings.settingsButton.title')}>
                     ${SVG.Settings}
                 </button>
                 <ol class="menu">
@@ -404,8 +404,8 @@ export class SettingsUI extends UI {
                     <li><button name="import" class="btn-octicon">${l10n.get('settings.importButton.text')}</button></li>
                     <li><button name="export" class="btn-octicon">${l10n.get('settings.exportButton.text')}</button></li>
                     <li class="divider edit-mode-possible-visible-only">
-                    <li class="edit-mode-possible-visible-only"><button name="edit" class="btn-octicon" title="${l10n.get('settings.editButton.title')}">📝</button>
-                        <button name="view" class="btn-octicon" title="${l10n.get('settings.viewButton.title')}">👁</button></li>
+                    <li class="edit-mode-possible-visible-only"><button name="edit" class="btn-octicon" title="${l10n.get('settings.editButton.title')}">${l10n.get('settings.editButton.text')}</button>
+                        <button name="view" class="btn-octicon" title="${l10n.get('settings.viewButton.title')}">${l10n.get('settings.viewButton.text')}</button></li>
                 </ol>
             </div>
             <dialog name="import">
