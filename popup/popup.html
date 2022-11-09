@@ -1,5 +1,44 @@
+<style>
+    body {
+        background-color: #181f29;
+        border: solid 1px #2f4357;
+        color: #c9d1d9;
+        padding: 10px;
+        margin: 0;
+        /* ¯\_(ツ)_/¯ chrome */
+        margin-bottom: 1px;
+    }
+
+    button {
+        cursor: pointer;
+        background: inherit;
+        color: inherit;
+        margin: 0;
+        padding: 2px;
+        border: 0;
+    }
+
+    button:hover {
+        background-color: #485a76;
+    }
+
+    button[name="settings"] img {
+        width: 32px;
+    }
+
+    ol {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
 <ol>
-    <li><button>Options</button></li>
+    <li>
+        <button name="settings" title="Settings">
+            <svg-icon svg="Settings"></svg-icon>
+        </button>
+    </li>
 </ol>
 
 <script type="module" src="popup.js"></script>
