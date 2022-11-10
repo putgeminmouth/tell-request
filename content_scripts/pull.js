@@ -253,6 +253,12 @@ class App {
             const { comment } = e.detail;
             this.presentation.addOrReplaceVisual({ visual: comment });
         });
+        commentUI.events.addEventListener('cancel', async e => {
+            const { comment } = e.detail;
+            if (!this.presentation.findById(comment.id)) {
+                document.querySelector(`[data-visual-id="${comment.id}"].visual-root`)?.remove();
+            }
+        });
 
         commentUI.rootElem.addEventListener('focusin', _ => {
             this.selectVisual({ id: value.id });
