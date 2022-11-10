@@ -272,7 +272,6 @@ export class SidebarUI extends UI {
                     <div class="label">${visual.text}</div>
                 </div>
                 <div class="toolbar">
-                    <button name="navTo" class="btn-octicon" title="${l10n.get('sidebar.navToButton.title')}">⎆</button>
                     <button name="delete" class="btn-octicon edit-mode-visible-only" title="${l10n.get('sidebar.deleteButton.title')}">X</button>
                 </div>
             </li>
@@ -287,7 +286,7 @@ export class SidebarUI extends UI {
         //     item.classList.remove('droptarget');
         // });
         const marker = item.querySelector('.marker');
-        const navToButton = item.querySelector('button[name="navTo"]');
+        const contentElem = item.querySelector('.content');
         const deleteButton = item.querySelector('button[name="delete"]');
 
         marker.addEventListener('dragstart', e => {
@@ -302,7 +301,7 @@ export class SidebarUI extends UI {
             this.sidebar.classList.remove('dragging');
         });
 
-        navToButton.addEventListener('click', e => {
+        contentElem.addEventListener('click', e => {
             this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id: item.data.id } }));
         });
         deleteButton.addEventListener('click', e => {
@@ -310,7 +309,6 @@ export class SidebarUI extends UI {
         });
         item.data = {
             id: visual.id,
-            navToButton
         };
         const insertAt = Array.from(this.list.querySelectorAll(`li.droptarget`)).slice(index, index + 1).first();
         insertAt.after(item);

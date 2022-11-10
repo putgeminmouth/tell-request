@@ -4,9 +4,6 @@ export const strings = {
     _code: 'en-US',
 
     sidebar: {
-        navToButton: {
-            title: 'Navigate to item'
-        },
         deleteButton: {
             title: 'Delete item'
         },
