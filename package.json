@@ -1,15 +1,6 @@
 {
-    "name": "prmono",
-    "version": "0.0.0",
-    "description": "A Chrome Extension",
-    "repository": {
-        "url": ""
-    },
     "scripts": {
-        "build.dev": ""
-    },
-    "author": "putgeminmouth",
-    "license": "1 million dollars",
-    "devDependencies": {},
-    "dependencies": {}
+        "build.dev": "build/package.sh",
+        "build.watch": "build/watch_package.sh"
+    }
 }

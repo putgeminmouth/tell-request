@@ -1,0 +1,47 @@
+{
+    "manifest_version": 2,
+    "name": "Review Story",
+    "description": "Provide guided narratives for your code change requests",
+    "version": "0.0.0",
+    "icons": {
+        "48": "icon48.png"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "browser_action": {
+        "browser_style": true,
+        "default_icon": {
+            "16": "icon48.png"
+        },
+        "default_title": "Review Story",
+        "default_popup": "popup/popup.html"
+    },
+    "optional_permissions": [],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://github.com/*/*/pull/*"
+            ],
+            "js": [
+                "content_scripts/pull.import.js"
+            ],
+            "css": [
+                "content_scripts/pull.css"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        "src/*",
+        "content_scripts/*"
+    ],
+    "options_ui": {
+        "page": "options.html"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "test@example.com"
+        }
+    }
+}
