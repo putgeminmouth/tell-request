@@ -1,55 +1,54 @@
-'use strict';
+`use strict`;
 
 export const strings = {
-    _code: 'en-US',
+    _code: `fr-CA`,
 
     sidebar: {
         navToButton: {
-            title: 'Navigate to item'
+            title: `Naviguer à l'item`
         },
         deleteButton: {
-            title: 'Delete item'
+            title: `Supprimer l'item`
         },
         navPrevButton: {
-            title: 'Navigate to previous item'
+            title: `Naviguer à item précédent`
         },
         navNextButton: {
-            title: 'Navigate to next item'
+            title: `Naviguer à l'item suivant`
         },
         saveButton: {
-            title: 'Save'
+            title: `Sauvegarder`
         },
         markerHandle: {
-            title: 'Drag to reorder items'
+            title: `Glisser pour réordonner l'item`
         }
     },
     divider: {
         collapseButton: {
-            title: 'Expand or collapse the sidebar'
         },
     },
     visual: {
         comment: {
             writeTab: {
-                text: 'Write'
+                text: `Écrire`
             },
             previewTab: {
-                text: 'Preview'
+                text: `Aperçu`
             },
             acceptButton: {
-                text: 'OK'
+                text: `OK`
             },
             cancelButton: {
-                text: 'Cancel'
+                text: `Annuler`
             }
         }
     },
     topToolbar: {
         editButton: {
-            title: 'Enter Edit-Mode'
+            title: `Activer l'édition`
         },
         viewButton: {
-            title: 'Enter View-Mode'
+            title: `Désactiver l'édition`
         }
     }
 };
