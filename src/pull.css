@@ -179,6 +179,10 @@ pointer-events: none;
     font-size: 0.75em;
 }
 
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .context>svg {
+    vertical-align: text-bottom;
+}
+
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .label {
     overflow: hidden;
     text-overflow: ellipsis;
