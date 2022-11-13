@@ -194,8 +194,6 @@ class CommentUI extends VisualUI {
                     </nav>
                 </div>
                 <div name="write" class="tabnav-content">
-                    <div class="toolbar">
-                    </div>
                     <textarea class="form-control input-contrast comment-form-textarea"></textarea>
                     <div class="form-actions">
                         <button type="button" name="save" class="btn btn-primary">Save</button>
@@ -335,13 +333,10 @@ class CommentUI extends VisualUI {
     }
 
     onWriteClick() {
-        this.tr.querySelector('.toolbar').style.display = null;
         setTimeout(() => this.textarea.focus()); // no idea why timeout
     }
 
     async onPreviewClick() {
-        this.tr.querySelector('.toolbar').style.display = 'none';
-
         if (this.textarea.value === this.previousPreviewValue) return; // avoid api calls
         const text = this.textarea.value;
         const commentId = this.prPage.getRandomCommentId();
@@ -363,6 +358,12 @@ class SidebarUI {
     constructor() {
         const sidebar = this.sidebar = Util.createElement(`
             <div class="${MAGIC} sidebar">
+                <div class="header">
+                    <div class="toolbar navbar">
+                        <button name="prev" class="toolbar-item btn-octicon">◀</button>
+                        <button name="next" class="toolbar-item btn-octicon">▶</button>
+                    </div>
+                </div>
                 <ol>
                     <li>
                         <div class="marker marker-rail">⭥</div>
@@ -372,6 +373,18 @@ class SidebarUI {
             </div>
         `);
         const list = this.list = sidebar.querySelector('ol');
+        sidebar.querySelector('.header .navbar button[name="prev"]').addEventListener('click', _ => {
+            const id = this.list.querySelector('li.visual.selected')?.previousElementSibling.previousElementSibling?.data?.id;
+            if (!id) return;
+            this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
+            this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id } }));
+        });
+        sidebar.querySelector('.header .navbar button[name="next"]').addEventListener('click', _ => {
+            const id = this.list.querySelector('li.visual.selected')?.nextElementSibling.nextElementSibling?.data.id;
+            if (!id) return;
+            this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
+            this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id } }));
+        });
         this.events = Util.createEventTarget();
 
         this.list.append(this.createDropTarget());
