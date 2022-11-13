@@ -143,6 +143,16 @@ class Presentation {
         this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: removed } }));
     }
 
+    moveVisual({ id, position }) {
+        const visual = this.visuals.find(x => x.id === id);
+        const oldIndex = this.indexOf({ id });
+
+        this.visuals.splice(oldIndex, 1);
+        this.visuals.splice(position, 0, visual);
+
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: [visual] } }));
+    }
+
     findByLineNo(filename, lineNo) {
         return this.visuals.find(x => x.context.file.filename === filename && x.context.lineNo === lineNo);
     }
@@ -390,12 +400,40 @@ class SidebarUI {
         `);
         const list = this.list = sidebar.querySelector('ol');
         this.events = Util.createEventTarget();
+
+        this.list.append(this.createDropTarget());
+    }
+
+    createDropTarget() {
+        const dropTarget = Util.createElement(`
+            <li class="droptarget"></li>
+        `);
+        // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#performing_a_drop
+        // > A listener for the dragenter and dragover events are used to indicate valid drop targets
+        dropTarget.addEventListener('dragstart', e => {
+            e.preventDefault();
+        });
+        dropTarget.addEventListener('dragover', e => {
+            e.preventDefault();
+        });
+
+        dropTarget.addEventListener('drop', e => {
+            this.list.querySelectorAll('.droptarget.hover').forEach(x => x.classList.remove('hover'));
+            const { id } = JSON.parse(e.dataTransfer.getData('application/json'));
+            const newPosition = Array.from(this.list.querySelectorAll('.droptarget')).indexOf(dropTarget);
+            this.events.dispatchEvent(new CustomEvent('reorder', { detail: { id, newPosition } }));
+        });
+
+        // workaround for :hover not applied during drag
+        dropTarget.addEventListener('dragenter', _ => dropTarget.classList.add('hover'));
+        dropTarget.addEventListener('dragleave', _ => dropTarget.classList.remove('hover'));
+        return dropTarget;
     }
 
     add(visual, index) {
         const item = Util.createElement(`
-            <li>
-                <div class="marker">⭥</div>
+            <li class="visual">
+                <div class="marker" draggable="true">⭥</div>
                 <div class="content">
                     <div class="context">
                         <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
@@ -409,8 +447,31 @@ class SidebarUI {
                 </div>
             </li>
         `);
+        const dropTarget = this.createDropTarget();
+        // item.addEventListener('dragenter', e => {
+        //     // this.list.querySelectorAll('li.droptarget').forEach(x => x.classList.remove('droptarget'));
+        //     item.classList.add('droptarget');
+        //     e.preventDefault();
+        // });
+        // item.addEventListener('dragleave', e => {
+        //     item.classList.remove('droptarget');
+        // });
+        const marker = item.querySelector('.marker');
         const navToButton = item.querySelector('button[name="navTo"]');
         const selectButton = item.querySelector('button[name="select"]');
+
+        marker.addEventListener('dragstart', e => {
+            e.dataTransfer.clearData();
+            e.dataTransfer.setData('application/json', JSON.stringify({ id: visual.id }));
+            e.dataTransfer.setDragImage(item, -100, -100);
+        });
+        marker.addEventListener('dragstart', _ => {
+            this.sidebar.classList.add('dragging');
+        });
+        marker.addEventListener('dragend', _ => {
+            this.sidebar.classList.remove('dragging');
+        });
+
         navToButton.addEventListener('click', e => {
             this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id: item.data.id } }));
         });
@@ -421,19 +482,32 @@ class SidebarUI {
             id: visual.id,
             navToButton
         };
-        const itemToInsertBefore = this.list.querySelector(`li:nth-of-type(${index + 1})`);
-        if (itemToInsertBefore) itemToInsertBefore.before(item); else this.list.append(item);
+        const insertAt = Array.from(this.list.querySelectorAll(`li.droptarget`)).slice(index, index + 1).first();
+        insertAt.after(item);
+        item.after(dropTarget);
     }
 
     remove(id) {
-        const item = this.list.querySelectorAll('li').find(x => x.data?.id === id);
+        const item = this.list.querySelectorAll('li.visual').find(x => x.data?.id === id);
+        item.nextElementSibling.remove();
         item.remove();
     }
 
+    move(id, position) {
+        const items = Array.from(this.list.querySelectorAll('li.visual'));
+        const item = items.find(x => x.data?.id === id);
+        const dropTarget = item.nextElementSibling;
+        if (position > items.length - 1)
+            items[items.length - 1].nextElementSibling.after(item);
+        else
+            items[position].before(item);
+        item.after(dropTarget);
+    }
+
     select(id) {
-        if (this.list.querySelector('li.selected')?.data.id === id) return;
-        this.list.querySelectorAll('li.selected').forEach(x => x.classList.remove('selected'));
-        this.list.querySelectorAll('li').find(x => x.data?.id === id)?.classList.add('selected');
+        if (this.list.querySelector('li.visual.selected')?.data.id === id) return;
+        this.list.querySelectorAll('li.visual.selected').forEach(x => x.classList.remove('selected'));
+        this.list.querySelectorAll('li.visual').find(x => x.data?.id === id)?.classList.add('selected');
         this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
     }
 }
@@ -471,6 +545,7 @@ class App {
         document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.sidebar);
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
         sidebar.events.addEventListener('select', e => this.onSidebarSelect(e));
+        sidebar.events.addEventListener('reorder', e => this.onSidebarReorder(e));
 
         const maxId = getAllIds(parsed).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
         Ids.initId(maxId);
@@ -556,7 +631,7 @@ class App {
     }
 
     findVisualUI(id) {
-        return document.querySelector(`[data-visual-id="${id}"]`)?.data.visualUI;
+        return document.querySelector(`[data-visual-id="${id}"].visual-root`)?.data.visualUI;
     }
 
     onPresentationChange(e) {
@@ -574,6 +649,13 @@ class App {
     onSidebarSelect(e) {
         const { id } = e.detail;
         this.selectVisual(id);
+    }
+
+    async onSidebarReorder(e) {
+        const { id, newPosition } = e.detail;
+        this.presentation.moveVisual({ id, position: newPosition });
+        this.sidebar.move(id, newPosition);
+        await this.persist();
     }
 
     onSelect(e) {
