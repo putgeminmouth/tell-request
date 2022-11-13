@@ -34,6 +34,41 @@ export class Metadata {
     }
 }
 
+class KeyboardShortcutHandler {
+    constructor(app) {
+        this.app = app;
+    }
+
+    actionNavigatePrevious() {
+        const selected = app.getSelectedVisualUI();
+        let index;
+        if (selected) {
+            const id = selected.model.id;
+            index = app.presentation.indexOf({ id });
+        } else {
+            index = app.presentation.length;
+        }
+        if (index > 0)
+            app.selectVisual({ index: index - 1 });
+    }
+    actionNavigateNext() {
+        const selected = app.getSelectedVisualUI();
+        let index;
+        if (selected) {
+            const id = selected.model.id;
+            index = app.presentation.indexOf({ id });
+        } else {
+            index = -1;
+        }
+        if (index < app.presentation.length - 1)
+            app.selectVisual({ index: index + 1 });
+    }
+
+    handle(e) {
+        if (e.key === 'ArrowLeft') return this.actionNavigatePrevious();
+        if (e.key === 'ArrowRight') return this.actionNavigateNext();
+    }
+}
 
 class App {
     constructor({ github, prPage }) {
@@ -47,6 +82,8 @@ class App {
         this.presentation = new Presentation();
         this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         this.presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
+
+        this.keyboardShortcuts = new KeyboardShortcutHandler();
 
         this.events.addEventListener('select', e => this.onSelect(e));
     }
@@ -103,6 +140,11 @@ class App {
         }
         if (await getConfig('editOnlyOwn') && this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId()) {
             document.body.classList.add('edit-mode-possible');
+        }
+        if (await getConfig('enableGlobalKeyboardShortcuts')) {
+            document.addEventListener('keydown', e => {
+                this.keyboardShortcuts.handle(e);
+            });
         }
     }
 
@@ -184,10 +226,10 @@ class App {
         });
 
         commentUI.rootElem.addEventListener('focusin', _ => {
-            this.selectVisual(value.id);
+            this.selectVisual({ id: value.id });
         });
         commentUI.rootElem.addEventListener('click', _ => {
-            this.selectVisual(value.id);
+            this.selectVisual({ id: value.id });
         });
         return commentUI;
     }
@@ -224,8 +266,11 @@ class App {
         });
     }
 
-    findVisualUI(id) {
-        return document.querySelector(`[data-visual-id="${id}"].visual-root`)?.data.visualUI;
+    findVisualUI({ id, index }) {
+        if (index >= 0)
+            id = this.presentation.findByIndex(index).id;
+        if (id)
+            return document.querySelector(`[data-visual-id="${id}"].visual-root`)?.data.visualUI;
     }
 
     async onPresentationChange(e) {
@@ -235,7 +280,7 @@ class App {
 
         added.forEach(x => this.sidebar.add(x, presentation.indexOf({ id: x.id })));
         added.forEach(x => {
-            const existingUI = this.findVisualUI(x.id);
+            const existingUI = this.findVisualUI({ id: x.id });
             if (existingUI) {
                 existingUI.setText(x.text);
             } else {
@@ -255,8 +300,7 @@ class App {
 
     onSidebarNav(e) {
         const { id } = e.detail;
-        this.findVisualUI(id).rootElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        this.selectVisual(id);
+        this.selectVisual({ id });
     }
 
     onSidebarDelete(e) {
@@ -280,12 +324,20 @@ class App {
     onSelect(e) {
         const { id } = e.detail;
         this.sidebar.select(id);
+        // as usual, timeout resolves various issues. here something about being inside an onclick handler :shrug:
+        setTimeout(_ => this.findVisualUI({ id }).rootElem.scrollIntoView({ behavior: 'smooth', block: 'center' }));
     }
 
-    selectVisual(id) {
-        if (this.findVisualUI(id).rootElem.classList.contains('selected')) return;
+    getSelectedVisualUI() {
+        return document.querySelector(`.${MAGIC}.visual-root.selected`)?.data.visualUI;
+    }
+
+    selectVisual({ id, index }) {
+        let visual = this.findVisualUI({ id, index });
+        if (visual?.rootElem.classList.contains('selected')) return;
         document.querySelectorAll(`.${MAGIC}.visual-root.selected`).forEach(x => x.classList.remove('selected'));
-        this.findVisualUI(id)?.rootElem.classList.add('selected');
+        visual?.rootElem.classList.add('selected');
+        id = id || visual.model.id;
         this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
     }
 

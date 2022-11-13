@@ -140,6 +140,10 @@ export class Presentation {
         return this.visuals.find(x => x.context.file.filename === filename && x.context.lineNo === lineNo);
     }
 
+    findByIndex(index) {
+        return this.visuals[index];
+    }
+
     indexOf({ id }) {
         if (id) return this.visuals.findIndex(x => x.id === id);
         return -1;
