@@ -126,7 +126,11 @@ export class Presentation {
         const oldIndex = this.indexOf({ id });
 
         this.visuals.splice(oldIndex, 1);
-        this.visuals.splice(position, 0, visual);
+        if (position > oldIndex) {
+            this.visuals.splice(position - 1, 0, visual);
+        } else {
+            this.visuals.splice(position, 0, visual);
+        }
 
         this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [visual], removed: [visual] } }));
     }
