@@ -195,7 +195,6 @@ class CommentUI extends VisualUI {
                 </div>
                 <div name="write" class="tabnav-content">
                     <div class="toolbar">
-                        <button name="linkTo" class="toolbar-item btn-octicon">🔗⇢</button>
                     </div>
                     <textarea class="form-control input-contrast comment-form-textarea"></textarea>
                 </div>
@@ -239,71 +238,71 @@ class CommentUI extends VisualUI {
                 });
             });
         });
-        tr.querySelector('button[name="linkTo"]').addEventListener('click', _ => {
-            const svg = Util.createElement(`
-                <svg style="position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible">
-                    <!--
-                    <circle class="debug1" fill="blue" cx="0" cy="0" r="5"></circle>
-                    <circle class="debug2" fill="yellow" cx="0" cy="0" r="5"></circle>
-                    -->
-                    <path stroke="red" stroke-width="2" fill="yellow" fill-opacity="0.5"></path>
-                </svg>
-            `);
-            const path = svg.querySelector('path');
-            // tr.querySelector('button[name="linkTo"]').after(svg);
-            document.body.append(svg);
-            document.addEventListener('mousemove', e => {
-                const getDocumentOffset = e => {
-                    const r = e.getBoundingClientRect();
-                    return { x: r.x + window.scrollX, y: r.y + window.scrollY };
-                };
-                const commonOrigin = getDocumentOffset(tr.querySelector('button[name="linkTo"]'));
-                const commonTarget = { x: e.pageX, y: e.pageY };
-                const calcControlPoint = ({ origin, target, focalMultiplier, bias }) => {
-                    const segment = { x: target.x - origin.x, y: target.y - origin.y };
-                    const ctrl = (() => {
-                        const mid = { x: segment.x * bias, y: segment.y * bias };
-                        // svg.querySelector('circle.debug1').setAttribute('cx', origin.x + mid.x);
-                        // svg.querySelector('circle.debug1').setAttribute('cy', origin.y + mid.y);
-                        const midAngle = Math.atan2(segment.y, segment.x);
-                        const orthY = Math.sin(midAngle - Math.PI / 2);
-                        const orthX = Math.cos(midAngle - Math.PI / 2);
-                        const focalLength = focalMultiplier * Math.sqrt(mid.x * mid.x + mid.y * mid.y);
-                        const focus = { x: mid.x + orthX * focalLength, y: mid.y + orthY * focalLength };
-                        // svg.querySelector('circle.debug2').setAttribute('cx', origin.x + focus.x);
-                        // svg.querySelector('circle.debug2').setAttribute('cy', origin.y + focus.y);
-                        return focus;
-                    }).apply();
-                    return { segment, ctrl };
-                };
-                const commonSegment = { x: Math.abs(commonTarget.x - commonOrigin.x), y: Math.abs(commonTarget.y - commonOrigin.y) };
-                const d = commonSegment.x > commonSegment.y;
-                const dx = d ? 0 : 5;
-                const dy = d ? -5 : 0;
-                const path1 = (() => {
-                    const origin = { x: commonOrigin.x - dx, y: commonOrigin.y - dy };
-                    const target = commonTarget;
-                    const { segment, ctrl } = calcControlPoint({ origin, target, focalMultiplier: 1.6, bias: 0.2 });
-                    return `l ${-dx} ${-dy} q ${ctrl.x} ${ctrl.y} ${segment.x} ${segment.y}`;
-                }).apply();
-                const path2 = (() => {
-                    const origin = commonTarget;
-                    const target = { x: commonOrigin.x + dx, y: commonOrigin.y + dy };
-                    const { segment, ctrl } = calcControlPoint({ origin, target, focalMultiplier: -0.6, bias: 0.8 });
-                    return `q ${ctrl.x} ${ctrl.y} ${segment.x} ${segment.y}`;
-                }).apply();
-                path.setAttribute('d', `M ${commonOrigin.x} ${commonOrigin.y} ${path1} ${path2} L ${commonOrigin.x} ${commonOrigin.y}`);
+        // tr.querySelector('button[name="linkTo"]').addEventListener('click', _ => {
+        //     const svg = Util.createElement(`
+        //         <svg style="position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible">
+        //             <!--
+        //             <circle class="debug1" fill="blue" cx="0" cy="0" r="5"></circle>
+        //             <circle class="debug2" fill="yellow" cx="0" cy="0" r="5"></circle>
+        //             -->
+        //             <path stroke="red" stroke-width="2" fill="yellow" fill-opacity="0.5"></path>
+        //         </svg>
+        //     `);
+        //     const path = svg.querySelector('path');
+        //     // tr.querySelector('button[name="linkTo"]').after(svg);
+        //     document.body.append(svg);
+        //     document.addEventListener('mousemove', e => {
+        //         const getDocumentOffset = e => {
+        //             const r = e.getBoundingClientRect();
+        //             return { x: r.x + window.scrollX, y: r.y + window.scrollY };
+        //         };
+        //         const commonOrigin = getDocumentOffset(tr.querySelector('button[name="linkTo"]'));
+        //         const commonTarget = { x: e.pageX, y: e.pageY };
+        //         const calcControlPoint = ({ origin, target, focalMultiplier, bias }) => {
+        //             const segment = { x: target.x - origin.x, y: target.y - origin.y };
+        //             const ctrl = (() => {
+        //                 const mid = { x: segment.x * bias, y: segment.y * bias };
+        //                 // svg.querySelector('circle.debug1').setAttribute('cx', origin.x + mid.x);
+        //                 // svg.querySelector('circle.debug1').setAttribute('cy', origin.y + mid.y);
+        //                 const midAngle = Math.atan2(segment.y, segment.x);
+        //                 const orthY = Math.sin(midAngle - Math.PI / 2);
+        //                 const orthX = Math.cos(midAngle - Math.PI / 2);
+        //                 const focalLength = focalMultiplier * Math.sqrt(mid.x * mid.x + mid.y * mid.y);
+        //                 const focus = { x: mid.x + orthX * focalLength, y: mid.y + orthY * focalLength };
+        //                 // svg.querySelector('circle.debug2').setAttribute('cx', origin.x + focus.x);
+        //                 // svg.querySelector('circle.debug2').setAttribute('cy', origin.y + focus.y);
+        //                 return focus;
+        //             }).apply();
+        //             return { segment, ctrl };
+        //         };
+        //         const commonSegment = { x: Math.abs(commonTarget.x - commonOrigin.x), y: Math.abs(commonTarget.y - commonOrigin.y) };
+        //         const d = commonSegment.x > commonSegment.y;
+        //         const dx = d ? 0 : 5;
+        //         const dy = d ? -5 : 0;
+        //         const path1 = (() => {
+        //             const origin = { x: commonOrigin.x - dx, y: commonOrigin.y - dy };
+        //             const target = commonTarget;
+        //             const { segment, ctrl } = calcControlPoint({ origin, target, focalMultiplier: 1.6, bias: 0.2 });
+        //             return `l ${-dx} ${-dy} q ${ctrl.x} ${ctrl.y} ${segment.x} ${segment.y}`;
+        //         }).apply();
+        //         const path2 = (() => {
+        //             const origin = commonTarget;
+        //             const target = { x: commonOrigin.x + dx, y: commonOrigin.y + dy };
+        //             const { segment, ctrl } = calcControlPoint({ origin, target, focalMultiplier: -0.6, bias: 0.8 });
+        //             return `q ${ctrl.x} ${ctrl.y} ${segment.x} ${segment.y}`;
+        //         }).apply();
+        //         path.setAttribute('d', `M ${commonOrigin.x} ${commonOrigin.y} ${path1} ${path2} L ${commonOrigin.x} ${commonOrigin.y}`);
 
-                const other = document.elementsFromPoint(e.clientX, e.clientY)
-                    .find(x => x.matches(`tr.${MAGIC} :scope`));
+        //         const other = document.elementsFromPoint(e.clientX, e.clientY)
+        //             .find(x => x.matches(`tr.${MAGIC} :scope`));
 
-                if (other) {
-                    const otherAncestor = Element.ancestors(other).find(x => x.matches(`tr.${MAGIC}`));
-                    document.querySelectorAll('.visual-linker-over').toArray().forEach(x => x.classList.remove('visual-linker-over'));
-                    otherAncestor.classList.add('visual-linker-over');
-                }
-            });
-        });
+        //         if (other) {
+        //             const otherAncestor = Element.ancestors(other).find(x => x.matches(`tr.${MAGIC}`));
+        //             document.querySelectorAll('.visual-linker-over').toArray().forEach(x => x.classList.remove('visual-linker-over'));
+        //             otherAncestor.classList.add('visual-linker-over');
+        //         }
+        //     });
+        // });
     }
 
     onCancelClick() {
