@@ -1,0 +1,378 @@
+const APP_UUID = 'cc91a745-d35c-466f-9047-3f20031fb4ae';
+const MAGIC = `----${APP_UUID}----`;
+//----cc91a745-d35c-466f-9047-3f20031fb4ae----
+//{"navigationOrder": 1}
+
+const Extend = (to, from, props) => {
+    const proto = to.constructor.prototype;
+    props.forEach(prop => {
+        Object.defineProperty(proto, prop, {
+            writable: false,
+            enumerable: false,
+            value: function () { return from[prop].apply(null, [this].concat(Array.from(arguments))); }
+        });
+    });
+};
+
+const Iterator = {
+    filter: function* (it, f) {
+        for (i of it)
+            if (f(i))
+                yield i;
+    },
+    first: it => it.next ? it.next()?.value : it[0],
+    find: (it, f) => it.filter(f).first(),
+    map: function* (it, f) {
+        for (i of it)
+            yield f(i);
+    },
+    // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
+    flatten: function* (it, depth) {
+        if (depth === undefined) {
+            depth = 1;
+        }
+
+        for (const item of it) {
+            if ((typeof item?.length === 'number' || typeof item?.next === 'function') && depth > 0) {
+                yield* item.flatten(depth - 1);
+            } else {
+                yield item;
+            }
+        }
+    },
+    flatMap: function* (it, f) {
+        yield* it.map(f).flatten();
+    },
+    toArray: it => Array.from(it),
+    distinct: it => new Set(it).values()
+};
+Extend([].values(), Iterator, ['filter', 'first', 'find', 'toArray', 'map', 'flatMap', 'flatten', 'distinct']);
+// Extend(new Set().values(), Iterator, ['filter', 'first', 'find', 'toArray', 'map', 'flatMap', 'flatten', 'distinct']);
+Extend(document.querySelectorAll(':scope > were_extending_nodelist_here'), Iterator, ['filter', 'find', 'toArray', 'distinct']);
+
+const Element = {
+    ancestors: function* (node) {
+        if (!node.parentElement) return;
+        yield node.parentElement;
+        yield* arguments.callee(node.parentElement);
+    }
+};
+['div', 'button'].forEach(x => Extend(document.createElement(x), Element, ['ancestors']));
+
+const Promises = {
+    create: () => {
+        let resolve, reject;
+        const p = new Promise((_resolve, _reject) => {
+            resolve = _resolve;
+            reject = _reject;
+        });
+        p.resolve = resolve;
+        p.reject = reject;
+        return p;
+    },
+    delay: millis => {
+        const p = Promises.create();
+        setTimeout(() => p.resolve(), millis);
+        return p;
+    }
+};
+
+const Try = f => {
+    try {
+        return f();
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+const Opt = x => x === undefined || x === null ? [] : [x];
+
+const Util = {
+    awaitMutation: (elem, config, find) => {
+        const p = Promises.create();
+        const observer = new MutationObserver(mutations => {
+            const found = find(mutations);
+            if (found !== null && found !== undefined) p.resolve(found);
+        });
+        observer.observe(elem, config);
+        elem[`observer_counter`] = elem[`observer_counter`] || 1;
+        elem[`observer_${elem[`observer_counter`]++}`] = observer;
+        return p;
+    },
+};
+
+const parseComment = c => {
+    const PARSE_REGEX = new RegExp(`^(?<before>.*?)(?:<!--\\s*)?(?:${MAGIC})(?<data>.*)(?:${MAGIC})(?:\\s*-->)?(?<after>.*)$`, 'gs');
+    let { value: matches } = c.matchAll(PARSE_REGEX)?.next();
+    if (!matches)
+        return;
+
+    const body = matches.groups.data;
+    const rest = matches.groups.before + matches.groups.after;
+    const j = Try(() => JSON.parse(body));
+    if (!j) return;
+    return {
+        data: j,
+        comment: rest
+    };
+};
+
+const renderComment = (text, data) => {
+    return text + ((!text.length || /\s$/.test(text)) ? '' : '\n') + '<!-- ' + MAGIC + JSON.stringify(data) + MAGIC + ' -->';
+};
+
+class Github {
+    async fetchPreviewCsrfToken(commentId) {
+        const response = await fetch(`review_comment/${commentId}/edit_form`);
+        const text = await response.text();
+        const tmp = document.createElement('div');
+        tmp.innerHTML = text;
+        const csrfToken = tmp.querySelector('input[data-csrf]')?.value;
+        return csrfToken;
+    }
+    async renderMarkdown({ authenticityToken, text }) {
+        return await fetch(`/preview`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams([['authenticity_token', authenticityToken], ['text', text]]).toString()
+        });
+    }
+}
+
+class App {
+    static init({ document, github }) {
+        this.github = github;
+        // const allCommentElements = document.querySelectorAll('.comment-body');
+        // const commentElements = Iterator.filter(allCommentElements, x => x.innerText.includes(MAGIC));
+        // return new App(Array.from(commentElements));
+    }
+    constructor(commentElements) {
+        // this.initAddCommentButton();
+        //this.hijackTemplates();
+        // this.initExistingComments(commentElements);
+    }
+
+    // markTemplateElement(tpl) {
+    //     tpl.content.firstElementChild.classList.add(`${MAGIC}-marker`);
+    //     tpl.content.querySelectorAll('.comment-body').toArray().forEach(x => x.classList.add(`${MAGIC}-marker`));
+    // }
+    // watchForMarkedTemplateInstantiation() {
+    //     const observer = new MutationObserver(mutations => {
+    //         mutations.values()
+    //             .flatMap(x => x.addedNodes)
+    //             .map(x => {
+    //                 if (x.classList?.contains(`${MAGIC}-marker`)) return x;
+    //                 return x.querySelector?.(`.${MAGIC}-marker`);
+    //             })
+    //             .filter(x => !!x)
+    //             .distinct()
+    //             .toArray()
+    //             .forEach(async x => { this.hijackInlineComment(x) })
+    //     });
+
+    //     observer.observe(document, { childList: true, subtree: true });
+    // }
+    // hijackInlineComment(x) {
+
+    //     const toolbar = x.querySelector('.toolbar-commenting');
+
+    //     const editor = x.querySelector('textarea');
+
+    //     let initButton;
+    //     {
+    //         const settingsButton = document.createElement('button');
+    //         settingsButton.className = toolbar.querySelector('button').className;
+    //         settingsButton.innerHTML = '⚙️';
+    //         settingsButton.title = 'Plugin Settings';
+    //         settingsButton.addEventListener('click', e => { });
+    //         toolbar.prepend(settingsButton);
+    //     }
+    //     {
+    //         initButton = document.createElement('button');
+    //         initButton.className = toolbar.querySelector('button').className;
+    //         initButton.innerHTML = '🔩';
+    //         initButton.title = 'Initialize';
+    //         initButton.addEventListener('click', _ => editor.value = renderComment(editor.value, {}));
+    //         toolbar.prepend(initButton);
+    //     }
+
+    //     editor.addEventListener('change', () => initButton.disabled = !parseComment(editor.value));
+
+    //     this.initEditor(editor);
+    // }
+
+    async initAddCommentButton() {
+        // document.querySelectorAll('button.add-line-comment').toArray().forEach(originalButton => {
+        //     const addButton = document.createElement('button');
+        //     addButton.className = originalButton.className;
+        //     addButton.innerHTML = originalButton.innerHTML;
+        //     addButton.style.backgroundColor = 'red';
+        //     addButton.style.left = '20px';
+        //     originalButton.parentElement.prepend(addButton)
+
+        //     addButton.addEventListener('click', e => { });
+        // });
+
+        const createButton = (originalButton) => {
+            const addButton = document.createElement('button');
+            addButton.classList.add('add-line-comment');
+            addButton.classList.add('btn-link');
+            addButton.innerHTML = originalButton.innerHTML;
+            addButton.style.backgroundColor = 'red';
+            addButton.style.left = '20px';
+            originalButton.parentElement.prepend(addButton)
+
+            addButton.addEventListener('click', e => {
+                const tr = document.createElement('tr');
+                tr.classList.add('inline-comments');
+                tr.innerHTML = `
+                <td class="line-comments" colspan="4">
+                    <textarea class="form-control input-contrast comment-form-textarea"></textarea>
+                </td>
+                `;
+                originalButton.ancestors().filter(x => x.tagName === 'TR').first()
+                    .after(tr);
+            });
+            return addButton;
+        };
+
+        document.body.querySelectorAll('button.add-line-comment')
+            .forEach(originalButton => createButton(originalButton));
+
+    }
+    initExistingComments(commentElements) {
+        // document.addEventListener('focusin', e => {
+        //     if (!(e.target.tagName === 'TEXTAREA' && e.target.classList.contains('pull_request_review_comment[body]'))) return;
+        //     const editor = e.target;
+        //     const parsed = parseComment(editor.value);
+        //     if (!parsed) return;
+
+        // });
+
+        // window.observer = new MutationObserver(function (mutations) {
+        //     // console.log(mutations, Array.from(mutations).flatMap(x => Array.from(x.addedNodes)).filter(x => x.tagName).filter(x => !!x), Array.from(mutations).flatMap(x => Array.from(x.removedNodes)).filter(x => x.tagName).filter(x => !!x));
+        //     console.log(mutations.flatMap(x => x.addedNodes.filter(x => !!x.tagName)).map(x => x.querySelector('textarea.comment-form-textarea')).filter(x => !!x)).toArray();
+        //     // console.log(mutations);
+        // });
+
+        this.commentElements = Array.from(commentElements);
+        this.commentElements.forEach(e => this.initComment(e));
+    }
+
+    async awaitLazyLoadedEditor(includeFragment) {
+        const editor = await Util.awaitMutation(includeFragment.parentElement, { childList: true, subtree: true }, mutations => {
+            const found = mutations
+                .flatMap(x => {
+                    return x.addedNodes.filter(x => !!x.tagName).toArray();
+                })
+                .map(x => {
+                    return x.querySelector('textarea.comment-form-textarea');
+                })
+                .filter(x => !!x)
+                .first();
+            return found;
+        });
+        return editor;
+    }
+
+    async initComment(elem) {
+        const parsed = parseComment(elem.innerHTML);
+        if (!parsed) return;
+        parsed.elem = elem;
+        elem.data = parsed.data;
+
+        const i = parsed.data.navigationOrder;
+
+        elem.innerHTML = `
+                <div>#${i}</div>
+                <button class='prev'>↖️</button>
+                <button class='next'>↘️</button>
+                <div>${parsed.comment}</div>
+                `;
+
+        elem.querySelector('.prev').addEventListener('click', e => {
+            this.commentElements.find(x => x.data.navigationOrder === i - 1)?.ancestors().filter(x => x.nodeName === 'TD').first()?.scrollIntoView();
+        });
+        elem.querySelector('.next').addEventListener('click', e => {
+            this.commentElements.find(x => x.data.navigationOrder === i + 1)?.ancestors().filter(x => x.nodeName === 'TD').first()?.scrollIntoView();
+        });
+
+        const holder = elem.ancestors().find(x => x.classList.contains('comment-holder'));
+        // holder.
+        // const editorPlaceholderParent = holder.querySelector('include-fragment[loading="lazy"].previewable-comment-form').parentElement;
+        const editorPlaceholderParent = holder.querySelector('include-fragment.previewable-comment-form').parentElement;
+
+        const editor = await this.awaitLazyLoadedEditor(holder.querySelector('include-fragment.previewable-comment-form'));
+
+        this.initEditor(editor);
+    }
+    initEditor(editor) {
+        const onFocus = () => {
+            Opt(parseComment(editor.value)).forEach(x => {
+                const local = editor[MAGIC] = {};
+                local.data = x.data;
+                const [selectionStart, selectionEnd] = [editor.selectionStart, editor.selectionEnd];
+                editor.value = x.comment;
+                editor.setSelectionRange(selectionStart, selectionEnd);
+            });
+        };
+        onFocus();
+
+        editor.addEventListener('focus', e => onFocus());
+        editor.addEventListener('blur', e => {
+            if (editor[MAGIC]) {
+                const [selectionStart, selectionEnd] = [editor.selectionStart, editor.selectionEnd];
+                editor.value = renderComment(editor.value, editor[MAGIC].data);
+                editor.setSelectionRange(selectionStart, selectionEnd);
+                editor[MAGIC] = null;
+            }
+        });
+    }
+
+}
+
+const github = new Github();
+let app;
+
+document.addEventListener('readystatechange', async e => {
+    if (document.readyState !== 'complete') return;
+    {
+        const allCommentElements = Array.from(document.querySelectorAll('.comment-body'));
+        const commentElements = allCommentElements.filter(x => x.classList.contains(MAGIC));
+        // app.initExistingComments(commentElements);
+        // app.initAddCommentButton();
+        app.watchForMarkedTemplateInstantiation();
+        document.querySelectorAll('tr.inline-comments').forEach(x => app.hijackInlineComment(x));
+    }
+
+    const token = await github.fetchPreviewCsrfToken(document.querySelector('.timeline-comment-group').id.slice(1));
+    const preview = await github.renderMarkdown({ authenticityToken: token, text: '*bolllld!*' });
+    console.log(preview);
+});
+app = new App({ document, github });
+
+// {
+//     const observer = new MutationObserver(mutations => {
+//         const known = new Set([
+//             'js-inline-comments-single-container-template',
+//             'js-inline-comments-split-form-container-template',
+//         ]);
+
+//         mutations.values()
+//             .flatMap(x => x.addedNodes)
+//             .filter(x => x.tagName === 'TEMPLATE')
+//             .map(x => {
+//                 if (known.has(x.id))
+//                     return x;
+//                 for (let i of known) {
+//                     const found = x.querySelector('#' + i);
+//                     if (found)
+//                         return found;
+//                 }
+//             })
+//             .filter(x => !!x)
+//             .toArray()
+//             .forEach(x => app.markTemplateElement(x));
+//     });
+//     observer.observe(document, { childList: true, subtree: true });
+// }
