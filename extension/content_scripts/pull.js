@@ -269,10 +269,12 @@ class App {
         });
 
         commentUI.rootElem.addEventListener('focusin', _ => {
-            this.selectVisual({ id: value.id });
+            if (this.presentation.findById(value.id))
+                this.selectVisual({ id: value.id });
         });
         commentUI.rootElem.addEventListener('click', _ => {
-            this.selectVisual({ id: value.id });
+            if (this.presentation.findById(value.id))
+                this.selectVisual({ id: value.id });
         });
         return commentUI;
     }
