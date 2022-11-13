@@ -14,10 +14,10 @@
                 "https://github.com/*/*/pull/*"
             ],
             "js": [
-                "pull.import.js"
+                "content_scripts/pull.import.js"
             ],
             "css": [
-                "src/pull.css"
+                "content_scripts/pull.css"
             ],
             "run_at": "document_start"
         }
@@ -25,7 +25,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "src/*"
+                "src/*",
+                "content_scripts/*"
             ],
             "matches": [
                 "https://github.com/*"
