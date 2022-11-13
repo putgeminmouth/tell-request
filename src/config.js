@@ -6,6 +6,18 @@ const defaults = {
     editFrequency: 'auto',
     editOnlyOwn: true,
     language: 'en-US',
+    shortcuts: {
+        navPrev: {
+            enabled: true,
+            shortcut: { key: 'ArrowLeft' }
+
+        },
+        navNext: {
+            enabled: true,
+            shortcut: { key: 'ArrowRight' }
+        }
+
+    }
 };
 
 export const getConfig = async (name) => {
@@ -22,6 +34,12 @@ export const getConfig = async (name) => {
 
 export const setConfig = async (name, value) => {
     return await chrome.storage.sync.set({ [`options.${name}`]: value });
+};
+
+export const updateConfig = async (name, updator) => {
+    const currentValue = await getConfig(name);
+    const newValue = await updator(currentValue) ?? currentValue;
+    return await setConfig(name, newValue);
 };
 
 export const clearConfig = async () => await chrome.storage.sync.clear();
