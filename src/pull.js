@@ -5,6 +5,7 @@ import { MAGIC, Opt, Promises, Try, Util, Element } from './common.js';
 import { Comment, File, FileContext, Ids, Presentation } from './model/model.js';
 import { CommentUI, DividerUI, SidebarUI } from './ui/ui.js';
 import { l10n } from './l10n.js';
+import { getConfig } from './config.js';
 
 const parseComment = c => {
     const PARSE_REGEX = new RegExp(`^(?<before>.*?)(?:<!--\\s*)?(?:${MAGIC})(?<data>.*)(?:${MAGIC})(?:\\s*-->)?(?<after>.*)$`, 'gs');
@@ -32,10 +33,11 @@ class App {
         this.prPage = prPage;
         this.events = Util.createEventTarget();
         this.presentation = new Presentation();
+        this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
+        this.presentation.events.addEventListener('change', e => this.maybePersistOnPresentationChange(e));
 
         this.files = [];
 
-        this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         this.events.addEventListener('select', e => this.onSelect(e));
     }
 
@@ -87,7 +89,12 @@ class App {
 
         const maxId = getAllIds(data).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
         Ids.initId(maxId);
-        this.presentation.import(data);
+
+        const presentation = new Presentation();
+        presentation.events.addEventListener('change', e => this.onPresentationChange(e));
+        presentation.import(data);
+        presentation.events.addEventListener('change', e => this.maybePersistOnPresentationChange(e));
+        this.presentation = presentation;
     }
 
     export() {
@@ -153,12 +160,12 @@ class App {
         return document.querySelector(`[data-visual-id="${id}"].visual-root`)?.data.visualUI;
     }
 
-    onPresentationChange(e) {
-        const { added, removed } = e.detail;
+    async onPresentationChange(e) {
+        const { presentation, added, removed } = e.detail;
         removed.forEach(x => this.sidebar.remove(x.id));
         removed.forEach(x => document.querySelector(`[data-visual-id="${x.id}"].visual-root`)?.remove());
 
-        added.forEach(x => this.sidebar.add(x, this.presentation.indexOf({ id: x.id })));
+        added.forEach(x => this.sidebar.add(x, presentation.indexOf({ id: x.id })));
         added.forEach(x => {
             const tr = document.querySelector(`div.file .diff-table tr:has(td[data-line-number="${x.context.lineNo}"])`);
             const fileElem = tr.ancestors().find(x => x.classList.contains('file')).first();
@@ -166,6 +173,11 @@ class App {
             tr.after(commentUI.rootElem);
             commentUI.setPreviewTab(); // no need to await
         });
+    }
+
+    async maybePersistOnPresentationChange(e) {
+        if (await getConfig('saveFrequency') === 'auto')
+            await this.persist();
     }
 
     onSidebarNav(e) {
