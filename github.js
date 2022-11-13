@@ -122,6 +122,7 @@ export class GithubApi {
         this.issue = new IssueApi(repositoryUrl);
     }
     async renderMarkdown({ authenticityToken, text }) {
+        if (!text) return '';
         // ?markdown_unsupported=false
         // ?pull_request=1076559894
         // ?repository=545729983

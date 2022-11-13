@@ -47,7 +47,7 @@ Extend([].values(), Iterator, ['filter', 'first', 'find', 'toArray', 'map', 'fla
 // Extend(new Set().values(), Iterator, ['filter', 'first', 'find', 'toArray', 'map', 'flatMap', 'flatten', 'distinct']);
 Extend(document.querySelectorAll(':scope > were_extending_nodelist_here'), Iterator, ['filter', 'find', 'toArray', 'distinct']);
 
-const Element = {
+export const Element = {
     ancestors: (() => {
         const f = function* (node) {
             if (!node.parentElement) return;
@@ -57,7 +57,12 @@ const Element = {
         return f;
     }).apply()
 };
-['div', 'button'].forEach(x => Extend(document.createElement(x), Element, ['ancestors']));
+['div', 'span', 'button', 'a', 'p', 'td', 'tr'].forEach(x => Extend(document.createElement(x), Element, ['ancestors']));
+Object.defineProperty(HTMLElement, 'ancestors', {
+    writable: false,
+    enumerable: false,
+    value: function () { return Element['ancestors'].apply(null, [this].concat(Array.from(arguments))); }
+});
 
 export const Promises = {
     create: () => {
