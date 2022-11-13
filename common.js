@@ -131,5 +131,5 @@ export const Util = {
         };
         detail.awaitPromises = async () => await Promise.all(detail._promises);
         return detail;
-    }
+    },
 };
