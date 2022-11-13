@@ -34,3 +34,21 @@
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-linker-over {
     background-color: aqua;
 }
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar {
+    top: 0;
+    position: sticky;
+    background-color: var(--color-canvas-default);
+    border: solid 1px var(--color-border-default);
+    border-radius: 6px;
+    display: flex;
+    flex-flow: row;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar .context {
+    background-color: var(--color-canvas-subtle);
+}
+
+.pr-toolbar {
+    flex-direction: column;
+}
