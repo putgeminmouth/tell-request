@@ -98,14 +98,9 @@ export class Presentation {
         this.events = Util.createEventTarget();
     }
 
-    addOrReplaceVisual({ visual, position }) {
+    addOrReplaceVisual({ visual }) {
         const existing = this.visuals.findIndex(x => x.id === visual.id);
-        let removed = [];
-        if (existing !== -1) {
-            removed = this.visuals.splice(existing, 1);
-        } else {
-        }
-        this.visuals.splice(isNaN(position) ? this.visuals.length : position, 0, visual);
+        const removed = this.visuals.splice(existing === -1 ? this.visuals.length : existing, existing === -1 ? 0 : 1, visual);
 
         this.events.dispatchEvent(new CustomEvent('change', { detail: { presentation: this, added: [visual], removed: removed } }));
     }

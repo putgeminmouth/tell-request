@@ -318,10 +318,14 @@ class App {
 
     async onPresentationChange(e) {
         const { presentation, added, removed } = e.detail;
+
+        const priorIndexes = added.reduce((acc, next) => (acc[next.id] = presentation.indexOf({ id: next.id }), acc), {});
+
+
         removed.forEach(x => this.sidebar.remove(x.id));
         removed.forEach(x => document.querySelector(`[data-visual-id="${x.id}"].visual-root`)?.remove());
 
-        added.forEach(x => this.sidebar.add(x, presentation.indexOf({ id: x.id })));
+        added.forEach(x => this.sidebar.add(x, priorIndexes[x.id]));
         added.forEach(x => {
             const existingUI = this.findVisualUI({ id: x.id });
             if (existingUI) {
