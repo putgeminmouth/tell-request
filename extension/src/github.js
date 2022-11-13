@@ -202,5 +202,9 @@ export class PullRequestPage {
             getFilenames: () => elements.map(x => x.querySelector('.file-header')).map(x => x.getAttribute('data-path'))
         };
     }
+
+    fileTreeHasDirectories() {
+        return !!document.querySelector('[data-tree-entry-type="directory"]');
+    }
 }
 
