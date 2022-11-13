@@ -9,6 +9,14 @@
     "permissions": [
         "storage"
     ],
+    "action": {
+        "browser_style": true,
+        "default_icon": {
+            "16": "icon48.png"
+        },
+        "default_title": "Review Story",
+        "default_popup": "popup/popup.html"
+    },
     "optional_permissions": [],
     "content_scripts": [
         {
