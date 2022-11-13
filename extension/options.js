@@ -3,7 +3,7 @@
 import { l10n } from './src/l10n.js';
 import { getConfig, setConfig, updateConfig, clearConfig, getConfigBytesInUse } from './src/config.js';
 import './src/ui/svg.js';
-import { Shortcut } from './src/ui/shortcut.js';
+import { Shortcut } from './src/ui/Shortcut.js';
 import './src/template.js';
 
 const init = async () => {
