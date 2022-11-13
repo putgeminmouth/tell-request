@@ -3,7 +3,7 @@
 import { GithubApi, PullRequestPage } from './github.js';
 import { MAGIC, Opt, Promises, Try, Util, Element } from './common.js';
 import { Comment, File, FileContext, Ids, Presentation } from './model/model.js';
-import { CommentUI, DividerUI, SidebarUI } from './ui/ui.js';
+import { CommentUI, DividerUI, SettingsUI, SidebarUI } from './ui/ui.js';
 import { l10n } from './l10n.js';
 import { getConfig } from './config.js';
 
@@ -53,29 +53,30 @@ class App {
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
         sidebar.events.addEventListener('delete', e => this.onSidebarDelete(e));
         sidebar.events.addEventListener('reorder', e => this.onSidebarReorder(e));
-        sidebar.events.addEventListener('save', e => this.onSidebarSave(e));
 
-        const settings = Util.createElement(`
-            <div class="${MAGIC} top-toolbar">
-                <button name="edit" class="btn-octicon" title="${l10n.get('topToolbar.editButton.title')}">📝</button>
-                <button name="view" class="btn-octicon" title="${l10n.get('topToolbar.viewButton.title')}">👁</button>
-                <button name="settings" class="btn-octicon">⚙</button>
-            </div>
-        `);
-        settings.querySelectorAll('button[name="edit"],button[name="view"]').forEach(x => x.addEventListener('click', _ => {
-            document.body.classList.toggle(`${MAGIC}_edit-mode`);
-        }));
-        document.querySelector('.diffbar > :last-child').before(settings);
+        const settings = this.settings = new SettingsUI();
+        settings.events.addEventListener('load', e => this.onSettingsLoad(e));
+        settings.events.addEventListener('save', e => this.onSettingsSave(e));
+        document.querySelector('.diffbar > :last-child').before(settings.rootElem);
 
         this.initAddVisualButtons();
 
-        const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
-        const currentValue = issueForm.editForm.querySelector('textarea').value;
-        const parsed = parseComment(currentValue);
-        this.import(parsed.data);
+        if (await getConfig('openFrequency') === 'auto') {
+            await this.onSettingsLoad();
+        }
     }
 
-    import(data) {
+    async import(data) {
+        // this.sidebar.reset();
+        // this.divider.reset();
+        // this.settings.reset();
+
+        if (this.presentation.length) {
+            const cleanupDone = Util.waitEvent(this.presentation.events, 'change');
+            this.presentation.removeAllVisuals();
+            await cleanupDone;
+        }
+
         const getAllIds = (o) => {
             if (o?.id) return o?.id;
             return Object.values(o).flatMap(v => {
@@ -87,7 +88,7 @@ class App {
             });
         };
 
-        const maxId = getAllIds(data).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
+        const maxId = getAllIds(data).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first() || 1;
         Ids.initId(maxId);
 
         const presentation = new Presentation();
@@ -167,11 +168,16 @@ class App {
 
         added.forEach(x => this.sidebar.add(x, presentation.indexOf({ id: x.id })));
         added.forEach(x => {
-            const tr = document.querySelector(`div.file .diff-table tr:has(td[data-line-number="${x.context.lineNo}"])`);
-            const fileElem = tr.ancestors().find(x => x.classList.contains('file')).first();
-            const commentUI = this.createCommentUI({ fileElem, value: x })
-            tr.after(commentUI.rootElem);
-            commentUI.setPreviewTab(); // no need to await
+            const existingUI = this.findVisualUI(x.id);
+            if (existingUI) {
+                existingUI.setText(x.text);
+            } else {
+                const tr = document.querySelector(`div.file .diff-table tr:has(td[data-line-number="${x.context.lineNo}"])`);
+                const fileElem = tr.ancestors().find(x => x.classList.contains('file')).first();
+                const commentUI = this.createCommentUI({ fileElem, value: x })
+                tr.after(commentUI.rootElem);
+                commentUI.setPreviewTab(); // no need to await
+            }
         });
     }
 
@@ -197,15 +203,6 @@ class App {
         this.sidebar.move(id, newPosition);
     }
 
-    async onSidebarSave(e) {
-        const promise = e.detail.promise();
-        try {
-            await this.persist();
-        } finally {
-            promise.resolve();
-        }
-    }
-
     onSelect(e) {
         const { id } = e.detail;
         this.sidebar.select(id);
@@ -226,6 +223,17 @@ class App {
     onDividerCollapse(e) {
         const { collapsed } = e.detail;
         this.sidebar.rootElem.classList.toggle('collapsed', collapsed);
+    }
+
+    async onSettingsSave(e) {
+        await this.persist();
+    }
+
+    async onSettingsLoad(e) {
+        const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
+        const currentValue = issueForm.editForm.querySelector('textarea').value;
+        const parsed = parseComment(currentValue);
+        this.import(parsed.data);
     }
 }
 

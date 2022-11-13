@@ -175,6 +175,10 @@ export class CommentUI extends VisualUI {
         });
     }
 
+    setText(text) {
+        this.textarea.value = text;
+    }
+
     async onPreviewClick() {
         await this.setPreviewTab();
     }
@@ -199,7 +203,6 @@ export class SidebarUI extends UI {
                 <div class="toolbar navbar">
                     <button name="prev" class="toolbar-item btn-octicon" title="${l10n.get('sidebar.navPrevButton.title')}">◀</button>
                     <button name="next" class="toolbar-item btn-octicon" title="${l10n.get('sidebar.navNextButton.title')}">▶</button>
-                    <button name="save" class="toolbar-item btn-octicon edit-mode-only" style="margin-left: auto" title="${l10n.get('sidebar.saveButton.title')}"><svg style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024"><path d="M149.75 37.001h698.373l123.836 112.94v820.924H67.192V37.001z"  /><path d="M264.701 339.385h509.743V57.427H264.701v281.958zM519.516 598.068H828.04v281.078H211.105V598.068z" fill="#FFFFFF" /><path d="M275.727 671.121h487.692v-23.968H275.727v23.968zM275.727 750.581h487.692v-23.967H275.727v23.967zM275.727 830.041h487.692v-23.968H275.727v23.968z" fill="#696F70" /><path d="M563.97 85.349h168.493v226.112H563.97z" fill="#20A5D5" /></svg></button>
                 </div>
             </div>
             <ol>
@@ -225,16 +228,6 @@ export class SidebarUI extends UI {
             if (!id) return;
             this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
             this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id } }));
-        });
-        sidebar.querySelector('.header .navbar button[name="save"]').addEventListener('click', async _ => {
-            this.disable();
-            try {
-                const detail = Util.addPromisesToEventDetail();
-                this.events.dispatchEvent(new CustomEvent('save', { detail }));
-                await Promise.all(detail._promises);
-            } finally {
-                this.enable();
-            }
         });
     }
 
@@ -384,6 +377,34 @@ export class DividerUI extends UI {
             divider.classList.toggle('collapsed');
             const collapsed = divider.classList.contains('collapsed');
             this.events.dispatchEvent(new CustomEvent('collapse', { detail: { collapsed } }));
+        });
+    }
+}
+
+export class SettingsUI extends UI {
+    constructor() {
+        super(Util.createElement(`<div class="${MAGIC} top-toolbar">`));
+        this.events = Util.createEventTarget();
+
+        this.rootElem.innerHTML = `
+            <button name="settings" class="btn-octicon">⚙</button>
+            <ol class="menu">
+                <li><button name="load" class="btn-octicon">Load</button></li>
+                <li><button name="save" class="btn-octicon edit-mode-only">Save</button></li>
+                <li><button name="edit" class="btn-octicon" title="${l10n.get('topToolbar.editButton.title')}">📝</button>
+                    <button name="view" class="btn-octicon" title="${l10n.get('topToolbar.viewButton.title')}">👁</button></li>
+            </ol>
+        `;
+
+        this.rootElem.querySelectorAll('button[name="edit"],button[name="view"]').forEach(x => x.addEventListener('click', _ => {
+            document.body.classList.toggle(`${MAGIC}_edit-mode`);
+        }));
+
+        this.rootElem.querySelector('button[name="load"]').addEventListener('click', _ => {
+            this.events.dispatchEvent(new CustomEvent('load'));
+        });
+        this.rootElem.querySelector('button[name="save"]').addEventListener('click', _ => {
+            this.events.dispatchEvent(new CustomEvent('save'));
         });
     }
 }

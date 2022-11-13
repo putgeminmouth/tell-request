@@ -135,4 +135,11 @@ export const Util = {
         detail.awaitPromises = async () => await Promise.all(detail._promises);
         return detail;
     },
+    waitEvent: (target, eventName) => {
+        const p = Promises.create();
+        target.addEventListener(eventName, e => {
+            setTimeout(_ => p.resolve());
+        }, { once: true });
+        return p;
+    }
 };

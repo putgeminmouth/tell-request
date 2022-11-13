@@ -266,6 +266,41 @@ pointer-events: none;
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"] {}
 
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu {
+    display: none;
+    position: absolute;
+    list-style-type: none;
+    padding: 5px 5px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar:hover ol.menu {
+    display: block;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li {
+    margin-bottom: 0;
+    padding: 5px 0px;
+    border-bottom: dashed 1px var(--color-border-muted);
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:hover {
+    background-color: var(--color-canvas-subtle);
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:first-of-type {
+    padding-top: 0px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li:last-of-type {
+    padding-bottom: 0px;
+    border-bottom: none;
+}
+
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li button {
+    margin-left: 0px;
+}
+
 body.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="edit"] {
     display: none;
 }
