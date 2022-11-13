@@ -301,6 +301,10 @@ pointer-events: none;
     display: block;
 }
 
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"] img {
+    height: 32px;
+}
+
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]:hover+ol.menu,
 /* this might look weird but it allows the menu to stay visible while moving there from the button */
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]+ol.menu:hover {
