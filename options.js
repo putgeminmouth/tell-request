@@ -4,8 +4,9 @@ import { l10n } from './src/l10n.js';
 import { getConfig, setConfig, updateConfig, clearConfig, getConfigBytesInUse } from './src/config.js';
 import './src/ui/svg.js';
 import { Shortcut } from './src/ui/shortcut.js';
+import './src/template.js';
 
-(async () => {
+const init = async () => {
 
     {
         document.querySelectorAll('input[name="saveFrequency"]').forEach(x => x.addEventListener('change', async e => {
@@ -134,4 +135,6 @@ import { Shortcut } from './src/ui/shortcut.js';
             clearConfig();
         });
     }
-}).apply();
+};
+
+init();

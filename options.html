@@ -170,18 +170,16 @@
         <div><button name="customize" style="margin-left: 5px; margin-top: 5px">Customize</button></div>
         <dialog name="keyboardShortcuts">
             <div class="title">Keyboard Shortcuts</div>
-            <div class="shortcut">
-                <input type="checkbox" name="shortcuts.navPrev.enabled">
-                <input type="text" name="shortcuts.navPrev.value" id="shortcuts.navPrev" readonly disabled>
-                <button name="shortcuts.navPrev">&#x2022;</button>
-                <label for="shortcuts.navPrev">Navigate to the previous item</label>
-            </div>
-            <div class="shortcut">
-                <input type="checkbox" name="shortcuts.navNext.enabled">
-                <input type="text" name="shortcuts.navNext.value" id="shortcuts.navNext" readonly disabled>
-                <button name="shortcuts.navNext">&#x2022;</button>
-                <label for="shortcuts.navNext">Navigate to the next item</label>
-            </div>
+            <template name="shortcut">
+                <div class="shortcut">
+                    <input type="checkbox" name="shortcuts.${name}.enabled">
+                    <input type="text" name="shortcuts.${name}.value" id="shortcuts.${name}" readonly disabled>
+                    <button name="shortcuts.${name}">&#x2022;</button>
+                    <label for="shortcuts.${name}">${label}</label>
+                </div>
+            </template>
+            <static-template template='[name="shortcut"]' data-name="navPrev" data-label="Navigate to the previous item"></static-template>
+            <static-template template='[name="shortcut"]' data-name="navNext" data-label="Navigate to the next item"></static-template>
             <div class="button-bar">
                 <button name="close" class="btn">Close</button>
             </div>
