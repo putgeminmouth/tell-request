@@ -1,6 +1,17 @@
+/* global */
+
 .----cc91a745-d35c-466f-9047-3f20031fb4ae---- button {
     user-select: none;
 }
+
+/* github */
+
+.hx_Layout.hx_Layout--sidebar-hidden {
+    /* fix layout when files hidden, doesn't seem to have any impact */
+    grid-auto-flow: column !important;
+}
+
+/* ui/visual */
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root>td {
     border: solid 2px transparent;
@@ -16,8 +27,6 @@
     flex-flow: row;
     background-color: var(--color-canvas-subtle);
 }
-
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .comment-form-head .toolbar {}
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .tabnav-tabs {
     background-color: var(--color-canvas-subtle);
@@ -68,6 +77,8 @@
     flex-direction: column;
 }
  */
+
+/* ui/sidebar */
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar.collapsed {
     display: none;
@@ -188,6 +199,8 @@ pointer-events: none;
     border-bottom: 1px dashed var(--color-border-subtle);
 }
 
+/* ui/divider */
+
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.divider {
     grid-column: auto;
     width: 16px;
@@ -241,7 +254,24 @@ pointer-events: none;
     transform: rotate(180deg);
 }
 
-.hx_Layout.hx_Layout--sidebar-hidden {
-    /* fix layout when files hidden, doesn't seem to have any impact */
-    grid-auto-flow: column !important;
+/* ui/top-toolbar */
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar {
+    margin-right: 20px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"] {}
+
+body.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="edit"] {
+    display: none;
+}
+
+body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="view"] {
+    display: none;
+}
+
+/* edit mode */
+
+body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .edit-mode-only {
+    display: none;
 }

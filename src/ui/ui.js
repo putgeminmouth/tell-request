@@ -22,7 +22,7 @@ class VisualUI extends UI {
 }
 export class CommentUI extends VisualUI {
     constructor({ github, prPage, fileElem, value }) {
-        super(Util.createElement(`<tr class="${MAGIC} visual-root">`));
+        super(Util.createElement(`<tr class="${MAGIC} visual-root visual-comment">`));
         this.github = github;
         this.prPage = prPage;
         this.fileElem = fileElem;
@@ -31,7 +31,7 @@ export class CommentUI extends VisualUI {
 
         const td = Util.createElement(`
             <td class="line-comments" colspan="4">
-                <div class="comment-form-head tabnav d-flex flex-justify-between mb-2">
+                <div class="comment-form-head tabnav flex-justify-between mb-2 edit-mode-only">
                     <nav class="tabnav-tabs">
                         <button type="button" name="write" class="btn-link tabnav-tab write-tab">Write</button>
                         <button type="button" name="preview" class="btn-link tabnav-tab write-tab">Preview</button>
@@ -198,11 +198,11 @@ export class SidebarUI extends UI {
                 <div class="toolbar navbar">
                     <button name="prev" class="toolbar-item btn-octicon">◀</button>
                     <button name="next" class="toolbar-item btn-octicon">▶</button>
-                    <button name="save" class="toolbar-item btn-octicon" style="margin-left: auto"><svg style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024"><path d="M149.75 37.001h698.373l123.836 112.94v820.924H67.192V37.001z"  /><path d="M264.701 339.385h509.743V57.427H264.701v281.958zM519.516 598.068H828.04v281.078H211.105V598.068z" fill="#FFFFFF" /><path d="M275.727 671.121h487.692v-23.968H275.727v23.968zM275.727 750.581h487.692v-23.967H275.727v23.967zM275.727 830.041h487.692v-23.968H275.727v23.968z" fill="#696F70" /><path d="M563.97 85.349h168.493v226.112H563.97z" fill="#20A5D5" /></svg></button>
+                    <button name="save" class="toolbar-item btn-octicon edit-mode-only" style="margin-left: auto"><svg style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024"><path d="M149.75 37.001h698.373l123.836 112.94v820.924H67.192V37.001z"  /><path d="M264.701 339.385h509.743V57.427H264.701v281.958zM519.516 598.068H828.04v281.078H211.105V598.068z" fill="#FFFFFF" /><path d="M275.727 671.121h487.692v-23.968H275.727v23.968zM275.727 750.581h487.692v-23.967H275.727v23.967zM275.727 830.041h487.692v-23.968H275.727v23.968z" fill="#696F70" /><path d="M563.97 85.349h168.493v226.112H563.97z" fill="#20A5D5" /></svg></button>
                 </div>
             </div>
             <ol>
-                <li>
+                <li class='edit-mode-only'>
                     <div class="marker marker-rail">⭥</div>
                     <div></div>
                 </li>
@@ -266,7 +266,7 @@ export class SidebarUI extends UI {
     add(visual, index) {
         const item = Util.createElement(`
             <li class="visual">
-                <div class="marker" draggable="true">⭥</div>
+                <div class="marker edit-mode-only" draggable="true">⭥</div>
                 <div class="content">
                     <div class="context">
                         <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
@@ -276,7 +276,7 @@ export class SidebarUI extends UI {
                 </div>
                 <div class="toolbar">
                     <button name="navTo" class="btn-octicon">⎆</button>
-                    <button name="delete" class="btn-octicon">X</button>
+                    <button name="delete" class="btn-octicon edit-mode-only">X</button>
                 </div>
             </li>
         `);

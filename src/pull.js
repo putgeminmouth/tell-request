@@ -52,6 +52,18 @@ class App {
         sidebar.events.addEventListener('reorder', e => this.onSidebarReorder(e));
         sidebar.events.addEventListener('save', e => this.onSidebarSave(e));
 
+        const settings = Util.createElement(`
+            <div class="${MAGIC} top-toolbar">
+                <button name="edit" class="btn-octicon">📝</button>
+                <button name="view" class="btn-octicon">👁</button>
+                <button name="settings" class="btn-octicon">⚙</button>
+            </div>
+        `);
+        settings.querySelectorAll('button[name="edit"],button[name="view"]').forEach(x => x.addEventListener('click', _ => {
+            document.body.classList.toggle(`${MAGIC}_edit-mode`);
+        }));
+        document.querySelector('.diffbar > :last-child').before(settings);
+
         this.initAddVisualButtons();
 
         const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
