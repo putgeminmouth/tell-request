@@ -179,5 +179,15 @@ export class PullRequestPage {
         document.querySelector('[data-confirm-cancel-text]').click();
         return authenticityToken;
     }
+
+    getFileElementForFile(filename) {
+        return document.querySelector(`#files .file:has(.file-header[data-path="${filename}"])`);
+    }
+    getFileElementAtPosition(position) {
+        return Array.from(document.querySelectorAll(`#files .file`)).slice(position, position + 1).first();
+    }
+    getFileElements() {
+        return document.querySelectorAll('#files .file');
+    }
 }
 
