@@ -32,7 +32,7 @@ export class CommentUI extends VisualUI {
 
         const td = Util.createElement(`
             <td class="line-comments" colspan="4">
-                <div class="comment-form-head tabnav flex-justify-between mb-2 edit-mode-only">
+                <div class="comment-form-head tabnav flex-justify-between mb-2 edit-mode-visible-only">
                     <nav class="tabnav-tabs">
                         <button type="button" name="write" class="btn-link tabnav-tab write-tab">${l10n.get('visual.comment.writeTab.text')}</button>
                         <button type="button" name="preview" class="btn-link tabnav-tab write-tab">${l10n.get('visual.comment.previewTab.text')}</button>
@@ -206,7 +206,7 @@ export class SidebarUI extends UI {
                 </div>
             </div>
             <ol>
-                <li class='edit-mode-only'>
+                <li class='edit-mode-visible-only'>
                     <div class="marker marker-rail">⭥</div>
                     <div></div>
                 </li>
@@ -260,7 +260,7 @@ export class SidebarUI extends UI {
     add(visual, index) {
         const item = Util.createElement(`
             <li class="visual">
-                <div class="marker edit-mode-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">⭥</div>
+                <div class="marker edit-mode-visible-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">⭥</div>
                 <div class="content">
                     <div class="context">
                         <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
@@ -270,7 +270,7 @@ export class SidebarUI extends UI {
                 </div>
                 <div class="toolbar">
                     <button name="navTo" class="btn-octicon" title="${l10n.get('sidebar.navToButton.title')}">⎆</button>
-                    <button name="delete" class="btn-octicon edit-mode-only" title="${l10n.get('sidebar.deleteButton.title')}">X</button>
+                    <button name="delete" class="btn-octicon edit-mode-visible-only" title="${l10n.get('sidebar.deleteButton.title')}">X</button>
                 </div>
             </li>
         `);
@@ -392,7 +392,7 @@ export class SettingsUI extends UI {
             </button>
             <ol class="menu">
                 <li><button name="load" class="btn-octicon">${l10n.get('settings.loadButton.text')}</button></li>
-                <li><button name="save" class="btn-octicon edit-mode-only">${l10n.get('settings.saveButton.text')}</button></li>
+                <li class="edit-mode-enabled-only"><button name="save" class="btn-octicon">${l10n.get('settings.saveButton.text')}</button></li>
                 <li class="divider">
                 <li><button name="import" class="btn-octicon">${l10n.get('settings.importButton.text')}</button></li>
                 <li><button name="export" class="btn-octicon">${l10n.get('settings.exportButton.text')}</button></li>
