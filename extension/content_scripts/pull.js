@@ -149,10 +149,12 @@ class App {
         settings.events.addEventListener('toggleEditMode', e => this.onSettingsToggleEditMode(e));
         document.querySelector('.diffbar > :last-child').before(settings.rootElem);
 
-        let githubFileTree = document.querySelector('file-tree');
-        if (githubFileTree) {
-            githubFileTree = this.githubFileTree = new GithubFileTree(githubFileTree);
-            githubFileTree.events.addEventListener('reorder', e => this.onGithubFileTreeReorder(e));
+        if (!this.prPage.fileTreeHasDirectories()) {
+            let githubFileTree = document.querySelector('file-tree');
+            if (githubFileTree) {
+                githubFileTree = this.githubFileTree = new GithubFileTree(githubFileTree);
+                githubFileTree.events.addEventListener('reorder', e => this.onGithubFileTreeReorder(e));
+            }
         }
 
         this.initAddVisualButtons();
@@ -217,13 +219,15 @@ class App {
 
         const warnings = [];
 
-        if (data.files?.length === this.prPage.getFiles().elements.length) {
-            data.files?.forEach((filename, i) => {
-                this.githubFileTree.move({ filename, position: i });
-                this.prPage.moveFileToPosition(filename, i);
-            });
-        } else {
-            warnings.push('Data had a different number of files than the page, file ordering is lost.');
+        if (this.githubFileTree) {
+            if (data.files?.length === this.prPage.getFiles().elements.length) {
+                data.files?.forEach((filename, i) => {
+                    this.githubFileTree.move({ filename, position: i });
+                    this.prPage.moveFileToPosition(filename, i);
+                });
+            } else {
+                warnings.push('Data had a different number of files than the page, file ordering is lost.');
+            }
         }
 
         if (warnings.length) {
