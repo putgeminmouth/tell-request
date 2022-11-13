@@ -149,6 +149,14 @@ export class CommentUI extends VisualUI {
 
     onCancelClick() {
         this.textarea.value = this.currentValue.text || '';
+
+        const detail = {
+            comment: this.currentValue,
+        };
+        this.disable();
+        this.events.dispatchEvent(new CustomEvent('cancel', { detail }));
+        this.enable();
+
         this.rootElem.querySelector('button[name="preview"]').click();
     }
 

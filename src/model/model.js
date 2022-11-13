@@ -144,6 +144,10 @@ export class Presentation {
         return this.visuals[index];
     }
 
+    findById(id) {
+        return this.visuals.find(x => x.id === id);
+    }
+
     indexOf({ id }) {
         if (id) return this.visuals.findIndex(x => x.id === id);
         return -1;
