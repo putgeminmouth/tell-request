@@ -366,9 +366,10 @@ class App {
 
     onSelect(e) {
         const { id } = e.detail;
+        if (!this.findVisualUI({ id })) return;
         this.sidebar.select(id);
         // as usual, timeout resolves various issues. here something about being inside an onclick handler :shrug:
-        setTimeout(_ => this.findVisualUI({ id }).rootElem.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        setTimeout(_ => this.findVisualUI({ id })?.rootElem.scrollIntoView({ behavior: 'smooth', block: 'center' }));
     }
 
     getSelectedVisualUI() {
