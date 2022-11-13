@@ -1,6 +1,7 @@
 'use strict';
 
 import { MAGIC, Util } from '../common.js';
+import { l10n } from '../l10n.js';
 
 class UI {
     constructor(rootElem) { this.rootElem = rootElem; }
@@ -33,15 +34,15 @@ export class CommentUI extends VisualUI {
             <td class="line-comments" colspan="4">
                 <div class="comment-form-head tabnav flex-justify-between mb-2 edit-mode-only">
                     <nav class="tabnav-tabs">
-                        <button type="button" name="write" class="btn-link tabnav-tab write-tab">Write</button>
-                        <button type="button" name="preview" class="btn-link tabnav-tab write-tab">Preview</button>
+                        <button type="button" name="write" class="btn-link tabnav-tab write-tab">${l10n.visual.comment.writeTab.text}</button>
+                        <button type="button" name="preview" class="btn-link tabnav-tab write-tab">${l10n.visual.comment.previewTab.text}</button>
                     </nav>
                 </div>
                 <div name="write" class="tabnav-content">
                     <textarea class="form-control input-contrast comment-form-textarea"></textarea>
                     <div class="form-actions">
-                        <button type="button" name="accept" class="btn btn-primary">OK</button>
-                        <button type="button" name="cancel" class="btn">Cancel</button>
+                        <button type="button" name="accept" class="btn btn-primary">${l10n.visual.comment.acceptButton.text}</button>
+                        <button type="button" name="cancel" class="btn">${l10n.visual.comment.cancelButton.text}</button>
                     </div>
                 </div>
                 <div name="preview" class="tabnav-content">
@@ -196,9 +197,9 @@ export class SidebarUI extends UI {
         sidebar.innerHTML = `
             <div class="header">
                 <div class="toolbar navbar">
-                    <button name="prev" class="toolbar-item btn-octicon">◀</button>
-                    <button name="next" class="toolbar-item btn-octicon">▶</button>
-                    <button name="save" class="toolbar-item btn-octicon edit-mode-only" style="margin-left: auto"><svg style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024"><path d="M149.75 37.001h698.373l123.836 112.94v820.924H67.192V37.001z"  /><path d="M264.701 339.385h509.743V57.427H264.701v281.958zM519.516 598.068H828.04v281.078H211.105V598.068z" fill="#FFFFFF" /><path d="M275.727 671.121h487.692v-23.968H275.727v23.968zM275.727 750.581h487.692v-23.967H275.727v23.967zM275.727 830.041h487.692v-23.968H275.727v23.968z" fill="#696F70" /><path d="M563.97 85.349h168.493v226.112H563.97z" fill="#20A5D5" /></svg></button>
+                    <button name="prev" class="toolbar-item btn-octicon" title="${l10n.sidebar.navPrevButton.title}">◀</button>
+                    <button name="next" class="toolbar-item btn-octicon" title="${l10n.sidebar.navNextButton.title}">▶</button>
+                    <button name="save" class="toolbar-item btn-octicon edit-mode-only" style="margin-left: auto" title="${l10n.sidebar.saveButton.title}"><svg style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024"><path d="M149.75 37.001h698.373l123.836 112.94v820.924H67.192V37.001z"  /><path d="M264.701 339.385h509.743V57.427H264.701v281.958zM519.516 598.068H828.04v281.078H211.105V598.068z" fill="#FFFFFF" /><path d="M275.727 671.121h487.692v-23.968H275.727v23.968zM275.727 750.581h487.692v-23.967H275.727v23.967zM275.727 830.041h487.692v-23.968H275.727v23.968z" fill="#696F70" /><path d="M563.97 85.349h168.493v226.112H563.97z" fill="#20A5D5" /></svg></button>
                 </div>
             </div>
             <ol>
@@ -266,7 +267,7 @@ export class SidebarUI extends UI {
     add(visual, index) {
         const item = Util.createElement(`
             <li class="visual">
-                <div class="marker edit-mode-only" draggable="true">⭥</div>
+                <div class="marker edit-mode-only" draggable="true" title="${l10n.sidebar.markerHandle.title}">⭥</div>
                 <div class="content">
                     <div class="context">
                         <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
@@ -275,8 +276,8 @@ export class SidebarUI extends UI {
                     <div class="label">${visual.text}</div>
                 </div>
                 <div class="toolbar">
-                    <button name="navTo" class="btn-octicon">⎆</button>
-                    <button name="delete" class="btn-octicon edit-mode-only">X</button>
+                    <button name="navTo" class="btn-octicon" title="${l10n.sidebar.navToButton.title}">⎆</button>
+                    <button name="delete" class="btn-octicon edit-mode-only" title="${l10n.sidebar.deleteButton.title}">X</button>
                 </div>
             </li>
         `);
@@ -352,7 +353,7 @@ export class DividerUI extends UI {
 
         const divider = this.rootElem;
         this.rootElem.innerHTML = `
-            <button class="btn-octicon" name="collapse">
+            <button class="btn-octicon" name="collapse" title="${l10n.divider.collapseButton.title}">
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-sidebar-collapse">
                     <path fill-rule="evenodd" d="M6.823 7.823L4.427 5.427A.25.25 0 004 5.604v4.792c0 .223.27.335.427.177l2.396-2.396a.25.25 0 000-.354z"></path><path fill-rule="evenodd" d="M1.75 0A1.75 1.75 0 000 1.75v12.5C0 15.216.784 16 1.75 16h12.5A1.75 1.75 0 0016 14.25V1.75A1.75 1.75 0 0014.25 0H1.75zM1.5 1.75a.25.25 0 01.25-.25H9.5v13H1.75a.25.25 0 01-.25-.25V1.75zM11 14.5v-13h3.25a.25.25 0 01.25.25v12.5a.25.25 0 01-.25.25H11z"></path>
                 </svg>
