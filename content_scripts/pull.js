@@ -141,10 +141,18 @@ class App {
         if (await getConfig('editOnlyOwn') && this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId()) {
             document.body.classList.add('edit-mode-possible');
         }
-        if (await getConfig('enableGlobalKeyboardShortcuts')) {
-            document.addEventListener('keydown', e => {
+
+        {
+            this.settings.shortcutsElement.addEventListener('keydown', e => {
+                e.stopPropagation();
                 this.keyboardShortcuts.handle(e);
             });
+            if (await getConfig('enableGlobalKeyboardShortcuts')) {
+                e.stopPropagation();
+                document.addEventListener('keydown', e => {
+                    this.keyboardShortcuts.handle(e);
+                });
+            }
         }
     }
 
