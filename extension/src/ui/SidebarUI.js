@@ -87,14 +87,7 @@ export class SidebarUI extends UI {
             </li>
         `);
         const dropTarget = this.createDropTarget();
-        // item.addEventListener('dragenter', e => {
-        //     // this.list.querySelectorAll('li.droptarget').forEach(x => x.classList.remove('droptarget'));
-        //     item.classList.add('droptarget');
-        //     e.preventDefault();
-        // });
-        // item.addEventListener('dragleave', e => {
-        //     item.classList.remove('droptarget');
-        // });
+
         const marker = item.querySelector('.marker');
         const contentElem = item.querySelector('.content');
         const deleteButton = item.querySelector('button[name="delete"]');
@@ -120,9 +113,9 @@ export class SidebarUI extends UI {
         item.data = {
             id: visual.id,
         };
-        const insertAt = Array.from(this.list.querySelectorAll(`li.droptarget`)).slice(index, index + 1).first();
-        insertAt.after(item);
-        item.after(dropTarget);
+        const insertAt = Array.from(this.list.querySelectorAll(`li.droptarget`))[index];
+        insertAt.before(item);
+        item.before(dropTarget);
     }
 
     remove(id) {
@@ -137,7 +130,6 @@ export class SidebarUI extends UI {
         const dropTarget = item.nextElementSibling;
         if (position > items.length - 1)
             items[items.length - 1].nextElementSibling.after(item);
-
         else
             items[position].before(item);
         item.after(dropTarget);
