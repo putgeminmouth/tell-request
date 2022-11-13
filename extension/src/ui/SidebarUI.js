@@ -77,7 +77,7 @@ export class SidebarUI extends UI {
                 <div class="content">
                     <div class="context">
                         <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
-                        <span>${visual.context.file.filename}: ${visual.context.lineNo}</span>
+                        <span>${l10n.get('sidebar.context.text', { filename: visual.context.file.filename, lineNo: visual.context.lineNo })}</span>
                     </div>
                     <div class="label">${visual.text}</div>
                 </div>

@@ -87,7 +87,7 @@ export class SettingsUI extends UI {
                 try {
                     json = JSON.parse(textarea.value);
                 } catch (e) {
-                    error.innerText = `${l10n.get('settings.importDialog.errors.invalidJson.text')}${e}`;
+                    error.innerText = `${l10n.get('settings.importDialog.errors.invalidJson.text', [e])}`;
                     return;
                 }
                 const detail = {
@@ -101,7 +101,7 @@ export class SettingsUI extends UI {
                     dialog.close();
                 } catch (e) {
                     console.error(e);
-                    error.innerText = `${l10n.get('settings.importDialog.errors.importFailed.text')}${e}`;
+                    error.innerText = `${l10n.get('settings.importDialog.errors.importFailed.text', [e])}`;
                 }
             });
             dialog.querySelector('button[name="cancel"]').addEventListener('click', _ => {

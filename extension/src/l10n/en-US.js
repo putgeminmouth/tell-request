@@ -1,5 +1,7 @@
 'use strict';
 
+import { stringTemplate as tpl } from '../stringTemplate.js';
+
 export const strings = {
     _code: 'en-US',
 
@@ -15,6 +17,9 @@ export const strings = {
         },
         markerHandle: {
             title: 'Drag to reorder items'
+        },
+        context: {
+            text: tpl('${filename}: ${lineNo}')
         }
     },
     divider: {
@@ -76,8 +81,8 @@ export const strings = {
                 text: 'Cancel'
             },
             errors: {
-                invalidJson: { text: 'Invalid JSON: ' },
-                importFailed: { text: 'Import failed: ' },
+                invalidJson: { text: tpl('Invalid JSON: ${error}') },
+                importFailed: { text: tpl('Import failed: ${error}') },
             }
         },
         exportDialog: {
