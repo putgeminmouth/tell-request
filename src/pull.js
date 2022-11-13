@@ -64,7 +64,7 @@ class App {
         if (await getConfig('openFrequency') === 'auto') {
             await this.onSettingsLoad();
         }
-        if (await getConfig('editFrequency') === 'auto') {
+        if (await getConfig('editFrequency') === 'auto' && this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId()) {
             await settings.setEditMode();
         }
     }
