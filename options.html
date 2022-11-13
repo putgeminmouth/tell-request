@@ -1,6 +1,6 @@
 <style type="text/css">
     body {
-        background-color: #0d1117;
+        background-color: #181f29;
         color: #c9d1d9;
         padding-right: 20px;
         /* TODO: horizontal scroll issues on chrome */
@@ -9,8 +9,12 @@
     select,
     input[type="text"],
     button {
-        background: transparent;
+        background: #2a3041;
         color: inherit;
+    }
+
+    hr {
+        margin: 10px 3px;
     }
 
     .radio-group label {
@@ -23,7 +27,7 @@
 
     .section {
         border: solid 1px #30363d;
-        padding: 5px 10px 10px 10px;
+        padding: 5px 0px;
         margin: 0px 0px 20px 0px;
         width: 100%;
     }
@@ -34,16 +38,13 @@
 
     .table {
         display: table;
+        width: 100%;
+        border-spacing: 3px 5px;
     }
 
     .section .title {
-        padding: 5px 5px;
+        padding: 0px 3px 3px 3px;
         font-weight: bold;
-    }
-
-    .section:not(.table) .title {
-        margin-left: -10px;
-        margin-right: -10px;
     }
 
     .table>.title:first-child {
@@ -52,46 +53,48 @@
 
     .section>.title:first-child {
         background-color: #30363d;
+        margin-bottom: 10px;
     }
 
     .table>.option {
         display: table-row;
+        padding: 0px 5px;
     }
 
     .section .option {}
 
     .table .option>* {
         display: table-cell;
-        margin-bottom: 10px;
     }
 </style>
 
-<div class="section table">
-    <div class="title">Saving</div>
-    <div class="radio-group">
-        <div><input type="radio" name="saveFrequency" value="auto" id="saveFrequency.auto"><label for="saveFrequency.auto">Save changes automatically as soon as they occur</label></div>
-        <div><input type="radio" name="saveFrequency" value="manual" id="saveFrequency.manual"><label for="saveFrequency.manual">Save changes only when the button is used</label></div>
-    </div>
-</div>
-
-<div class="section table">
+<div class="section">
     <div class="title">Appearance</div>
 
-    <div class="option">
-        <label for="language">Language</label>
-        <select name="language" id="language"></select>
-    </div>
+    <div class="table">
+        <div class="option"><label for="language">Language</label><select name="language" id="language"></select></div>
 
-    <div class="option">
-        <label for="theme">Theme</label>
-        <select name="theme" id="theme">
-            <option value="">Use Github settings</option>
-        </select>
+        <div class="option">
+            <label for="theme">Theme</label>
+            <select name="theme" id="theme">
+                <option value="">Use Github settings</option>
+            </select>
+        </div>
     </div>
 </div>
 
 <div class="section">
     <div class="title">Behavior</div>
+
+    <div class="option">
+        <div class="title">Saving</div>
+        <div class="radio-group">
+            <div><input type="radio" name="saveFrequency" value="auto" id="saveFrequency.auto"><label for="saveFrequency.auto">Save changes automatically as soon as they occur</label></div>
+            <div><input type="radio" name="saveFrequency" value="manual" id="saveFrequency.manual"><label for="saveFrequency.manual">Save changes only when the button is used</label></div>
+        </div>
+    </div>
+
+    <hr>
 
     <div class="option">
         <div class="title">Loading</div>
@@ -100,7 +103,9 @@
             <div><input type="radio" name="openFrequency" value="manual" id="openFrequency.manual"><label for="openFrequency.manual">Open only when the button is used</label></div>
         </div>
     </div>
+
     <hr>
+
     <div class="option">
         <div class="title">Editing</div>
         <div class="radio-group">
@@ -110,10 +115,12 @@
     </div>
 </div>
 
-<div class="section table">
+<div class="section">
     <div class="title">Advanced</div>
-    <div class="option"><label for="bytesInUse">Bytes used</label><input type="text" name="bytesInUse" id="bytesInUse" readonly></div>
-    <div class="option"><button name="clearStorage">Clear Storage</button></div>
+    <div class="table">
+        <div class="option"><label for="bytesInUse">Bytes used</label><input type="text" name="bytesInUse" id="bytesInUse" readonly></div>
+        <div class="option"><button name="clearStorage">Clear Storage</button></div>
+    </div>
 </div>
 
 <script type="module" src="options.js"></script>
