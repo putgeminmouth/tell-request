@@ -294,19 +294,18 @@ pointer-events: none;
     position: absolute;
     list-style-type: none;
     padding: 5px 5px;
-}
-
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu:not(.visible) {
     display: none;
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]:hover+ol.menu {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu.visible {
     display: block;
-
 }
 
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]+ol.menu.visible {
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]:hover+ol.menu,
+/* this might look weird but it allows the menu to stay visible while moving there from the button */
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar button[name="settings"]+ol.menu:hover {
     display: block;
+
 }
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.top-toolbar ol.menu>li {

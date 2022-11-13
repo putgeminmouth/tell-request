@@ -3,7 +3,9 @@
     "name": "Review Story",
     "description": "Provide guided narratives for your code change requests",
     "version": "0.0.0",
-    "icons": {},
+    "icons": {
+        "48": "icon48.png"
+    },
     "permissions": [
         "storage"
     ],
@@ -36,5 +38,10 @@
     "options_ui": {
         "page": "options.html",
         "open_in_tab": false
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "test@example.com"
+        }
     }
 }
