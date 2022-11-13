@@ -26,7 +26,7 @@ export const l10n = {
         l10n.current = strings;
     },
 
-    getFrom: (strings, path) => {
+    getFrom: (strings, path, args) => {
         const parts = path.split('.')
         let node = strings;
         for (const p of parts) {
@@ -36,12 +36,15 @@ export const l10n = {
             }
             node = node[p];
         }
-        return node;
+        if (node?.isStringTemplate)
+            return node(args);
+        else
+            return node;
     },
-    get: path => {
-        let value = l10n.getFrom(l10n.current, path);
+    get: (path, args) => {
+        let value = l10n.getFrom(l10n.current, path, args);
         if (value?.isFailure && l10n.default)
-            value = l10n.getFrom(l10n.default, path);
+            value = l10n.getFrom(l10n.default, path, args);
         return value;
     }
 };
