@@ -34,6 +34,7 @@ import { getConfig, setConfig, clearConfig, getConfigBytesInUse } from './src/co
             setConfig('editFrequency', e.currentTarget.value);
         }));
         document.querySelector(`input[name="editFrequency"][value="${await getConfig('editFrequency')}"]`).checked = true;
+        document.querySelector(`input[name="editOnlyOwn"]`).checked = !!await getConfig('editOnlyOwn');
     }
 
     {
