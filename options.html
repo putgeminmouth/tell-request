@@ -1,9 +1,70 @@
 <style type="text/css">
-    .radio-group .choice {}
+    body {
+        background-color: #0d1117;
+        color: #c9d1d9;
+    }
+
+    select {
+        background: transparent;
+        color: inherit;
+    }
+
+    .radio-group label {
+        vertical-align: bottom;
+    }
+
+    .radio-group>div {
+        margin-bottom: 5px;
+    }
+
+    .section {
+        border: solid 1px #30363d;
+        padding: 5px 10px 10px 10px;
+        margin: 0px 0px 20px 0px;
+        display: table;
+        width: 100%;
+    }
+
+    .section>.title {
+        padding: 5px 5px;
+        background-color: #30363d;
+        display: table-caption;
+    }
+
+    .section .option {
+        display: table-row;
+    }
+
+    .section .option * {
+        display: table-cell;
+        margin-bottom: 10px;
+    }
 </style>
-<div class="radio-group">
-    <div><input type="radio" name="saveFrequency" value="auto" id="saveFrequency.auto"><label for="saveFrequency.auto">Save changes automatically as soon as they occur</label></div>
-    <div><input type="radio" name="saveFrequency" value="manual" id="saveFrequency.manual"><label for="saveFrequency.manual">Save changes only when the Save Button is used</label></div>
+
+<div class="section">
+    <div class="title">Saving</div>
+    <div class="radio-group">
+        <div><input type="radio" name="saveFrequency" value="auto" id="saveFrequency.auto"><label for="saveFrequency.auto">Save changes automatically as soon as they occur</label></div>
+        <div><input type="radio" name="saveFrequency" value="manual" id="saveFrequency.manual"><label for="saveFrequency.manual">Save changes only when the Save Button is used</label></div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="title">Appearance</div>
+
+    <div class="option">
+        <label for="language">Language</label>
+        <select name="language" id="language">
+            <option value="en-US">en-US</option>
+        </select>
+    </div>
+
+    <div class="option">
+        <label for="theme">Theme</label>
+        <select name="theme" id="theme">
+            <option value="en-US">Dark (Github)</option>
+        </select>
+    </div>
 </div>
 
 <script type="module" src="options.js"></script>
