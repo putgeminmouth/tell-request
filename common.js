@@ -120,5 +120,16 @@ export const Util = {
         handler.attach = target => eventMethods.forEach(x => target[x] = function () { return handler[x].apply(handler, arguments) });
         eventMethods.forEach(x => handler[x] = underlying[x].bind(underlying));
         return handler;
+    },
+    addPromisesToEventDetail: detail => {
+        detail = detail || {};
+        detail._promises = [];
+        detail.promise = () => {
+            const p = Promises.create();
+            detail._promises.push(p);
+            return p;
+        };
+        detail.awaitPromises = async () => await Promise.all(detail._promises);
+        return detail;
     }
 };

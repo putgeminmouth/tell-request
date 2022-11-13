@@ -136,6 +136,15 @@ class Presentation {
         this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: removed } }));
     }
 
+    removeVisual({ id }) {
+        const existing = this.visuals.findIndex(x => x.id === id);
+        if (existing === -1) return;
+
+        const removed = this.visuals.splice(existing, 1);
+
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [], removed: removed } }));
+    }
+
     moveVisual({ id, position }) {
         const visual = this.visuals.find(x => x.id === id);
         const oldIndex = this.indexOf({ id });
@@ -171,19 +180,32 @@ class Presentation {
     }
 }
 
-class VisualUI {
+class UI {
+    constructor(rootElem) { this.rootElem = rootElem; }
+
+    enable() {
+        this.rootElem.querySelectorAll('input,button,textarea').forEach(x => x.disabled = false);
+    }
+
+    disable() {
+        this.rootElem.querySelectorAll('input,button,textarea').forEach(x => x.disabled = true);
+    }
+}
+
+class VisualUI extends UI {
     constructor(rootElem) {
-        this.rootElem = rootElem;
+        super(rootElem);
+        rootElem.classList.add('visual-root');
     }
 }
 class CommentUI extends VisualUI {
-    constructor({ github, prPage, fileElem, context, value }) {
+    constructor({ github, prPage, fileElem, value }) {
         super(Util.createElement(`<tr class="${MAGIC} visual-root">`));
         this.github = github;
         this.prPage = prPage;
         this.fileElem = fileElem;
         this.events = Util.createEventTarget();
-        this.currentValue = value || new Comment({ context, text: '' });
+        this.currentValue = value;
 
         const td = Util.createElement(`
             <td class="line-comments" colspan="4">
@@ -196,7 +218,7 @@ class CommentUI extends VisualUI {
                 <div name="write" class="tabnav-content">
                     <textarea class="form-control input-contrast comment-form-textarea"></textarea>
                     <div class="form-actions">
-                        <button type="button" name="save" class="btn btn-primary">Save</button>
+                        <button type="button" name="accept" class="btn btn-primary">OK</button>
                         <button type="button" name="cancel" class="btn">Cancel</button>
                     </div>
                 </div>
@@ -208,11 +230,11 @@ class CommentUI extends VisualUI {
                 </div>
             </td>
         `);
-        const tr = this.tr = this.rootElem;
+        const tr = this.rootElem;
         tr.setAttribute('data-visual-id', this.currentValue.id);
         tr.append(td);
 
-        tr.data = { visualUI: this };
+        tr.data = { visualUI: this, visual: this.currentValue };
         const textarea = this.textarea = tr.querySelector('textarea');
         textarea.value = this.currentValue.text;
         const previewButton = this.previewButton = tr.querySelector('button[name="preview"]');
@@ -222,7 +244,7 @@ class CommentUI extends VisualUI {
 
         tr.querySelector('button[name="cancel"]').addEventListener('click', e => this.onCancelClick(e));
 
-        tr.querySelector('button[name="save"]').addEventListener('click', e => this.onSaveClick(e));
+        tr.querySelector('button[name="accept"]').addEventListener('click', e => this.onAcceptClick(e));
 
         tr.querySelector('button[name="preview"]').addEventListener('click', e => this.onPreviewClick(e));
 
@@ -306,30 +328,20 @@ class CommentUI extends VisualUI {
 
     onCancelClick() {
         this.textarea.value = this.currentValue.text || '';
-        this.tr.querySelector('button[name="preview"]').click();
+        this.rootElem.querySelector('button[name="preview"]').click();
     }
 
-    async onSaveClick() {
+    async onAcceptClick() {
         const text = this.textarea.value;
         this.currentValue.text = text;
 
         const detail = {
             comment: this.currentValue,
-            _promises: [],
-            promise() {
-                const p = Promises.create();
-                detail._promises.push(p);
-                return p;
-            }
         };
         this.disable();
-        try {
-            this.events.dispatchEvent(new CustomEvent('save', { detail }));
-            await Promise.all(detail._promises);
-        } finally {
-            this.enable();
-        }
-        this.tr.querySelector('button[name="preview"]').click();
+        this.events.dispatchEvent(new CustomEvent('accept', { detail }));
+        this.enable();
+        this.rootElem.querySelector('button[name="preview"]').click();
     }
 
     onWriteClick() {
@@ -341,38 +353,35 @@ class CommentUI extends VisualUI {
         const text = this.textarea.value;
         const commentId = this.prPage.getRandomCommentId();
         const rendered = await this.github.renderMarkdown({ authenticityToken: await this.github.pullFiles.fetchCommentCsrfToken(commentId), text });
-        this.tr.querySelector('.comment-body').innerHTML = rendered;
+        this.rootElem.querySelector('.comment-body').innerHTML = rendered;
         this.previousPreviewValue = text;
-    }
-
-    enable() {
-        this.tr.querySelectorAll('input,button,textarea').forEach(x => x.disabled = false);
-    }
-
-    disable() {
-        this.tr.querySelectorAll('input,button,textarea').forEach(x => x.disabled = true);
     }
 }
 
-class SidebarUI {
+class SidebarUI extends UI {
     constructor() {
-        const sidebar = this.sidebar = Util.createElement(`
-            <div class="${MAGIC} sidebar">
-                <div class="header">
-                    <div class="toolbar navbar">
-                        <button name="prev" class="toolbar-item btn-octicon">◀</button>
-                        <button name="next" class="toolbar-item btn-octicon">▶</button>
-                    </div>
+        super(Util.createElement(`<div class="${MAGIC} sidebar">`));
+        const sidebar = this.sidebar = this.rootElem;
+        sidebar.innerHTML = `
+            <div class="header">
+                <div class="toolbar navbar">
+                    <button name="prev" class="toolbar-item btn-octicon">◀</button>
+                    <button name="next" class="toolbar-item btn-octicon">▶</button>
+                    <button name="save" class="toolbar-item btn-octicon" style="margin-left: auto"><svg style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor; overflow: hidden;" viewBox="0 0 1024 1024"><path d="M149.75 37.001h698.373l123.836 112.94v820.924H67.192V37.001z"  /><path d="M264.701 339.385h509.743V57.427H264.701v281.958zM519.516 598.068H828.04v281.078H211.105V598.068z" fill="#FFFFFF" /><path d="M275.727 671.121h487.692v-23.968H275.727v23.968zM275.727 750.581h487.692v-23.967H275.727v23.967zM275.727 830.041h487.692v-23.968H275.727v23.968z" fill="#696F70" /><path d="M563.97 85.349h168.493v226.112H563.97z" fill="#20A5D5" /></svg></button>
                 </div>
-                <ol>
-                    <li>
-                        <div class="marker marker-rail">⭥</div>
-                        <div></div>
-                    </li>
-                </ol>
             </div>
-        `);
-        const list = this.list = sidebar.querySelector('ol');
+            <ol>
+                <li>
+                    <div class="marker marker-rail">⭥</div>
+                    <div></div>
+                </li>
+            </ol>
+        `;
+        this.list = sidebar.querySelector('ol');
+        this.events = Util.createEventTarget();
+
+        this.list.append(this.createDropTarget());
+
         sidebar.querySelector('.header .navbar button[name="prev"]').addEventListener('click', _ => {
             const id = this.list.querySelector('li.visual.selected')?.previousElementSibling.previousElementSibling?.data?.id;
             if (!id) return;
@@ -385,9 +394,16 @@ class SidebarUI {
             this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
             this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id } }));
         });
-        this.events = Util.createEventTarget();
-
-        this.list.append(this.createDropTarget());
+        sidebar.querySelector('.header .navbar button[name="save"]').addEventListener('click', async _ => {
+            this.disable();
+            try {
+                const detail = Util.addPromisesToEventDetail();
+                this.events.dispatchEvent(new CustomEvent('save', { detail }));
+                await Promise.all(detail._promises);
+            } finally {
+                this.enable();
+            }
+        });
     }
 
     createDropTarget() {
@@ -429,7 +445,7 @@ class SidebarUI {
                 </div>
                 <div class="toolbar">
                     <button name="navTo" class="btn-octicon">⎆</button>
-                    <button name="select" class="btn-octicon">⌖</button>
+                    <button name="delete" class="btn-octicon">X</button>
                 </div>
             </li>
         `);
@@ -444,7 +460,7 @@ class SidebarUI {
         // });
         const marker = item.querySelector('.marker');
         const navToButton = item.querySelector('button[name="navTo"]');
-        const selectButton = item.querySelector('button[name="select"]');
+        const deleteButton = item.querySelector('button[name="delete"]');
 
         marker.addEventListener('dragstart', e => {
             e.dataTransfer.clearData();
@@ -461,8 +477,8 @@ class SidebarUI {
         navToButton.addEventListener('click', e => {
             this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id: item.data.id } }));
         });
-        selectButton.addEventListener('click', e => {
-            this.events.dispatchEvent(new CustomEvent('select', { detail: { id: item.data.id } }));
+        deleteButton.addEventListener('click', e => {
+            this.events.dispatchEvent(new CustomEvent('delete', { detail: { id: item.data.id } }));
         });
         item.data = {
             id: visual.id,
@@ -515,8 +531,9 @@ class App {
         const sidebar = this.sidebar = new SidebarUI();
         document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.sidebar);
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
-        sidebar.events.addEventListener('select', e => this.onSidebarSelect(e));
+        sidebar.events.addEventListener('delete', e => this.onSidebarDelete(e));
         sidebar.events.addEventListener('reorder', e => this.onSidebarReorder(e));
+        sidebar.events.addEventListener('save', e => this.onSidebarSave(e));
 
         this.initAddVisualButtons();
 
@@ -541,17 +558,6 @@ class App {
         const maxId = getAllIds(data).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
         Ids.initId(maxId);
         this.presentation.import(data);
-
-        this.presentation.visuals.forEach(v => {
-            const lineNo = v.context.lineNo;
-            const fileElem = document.querySelector(`div[data-tagsearch-path="${v.context.file.filename}"].file`);
-            const commentUI = this.createCommentUI({ fileElem, context: v.context, value: v });
-            document.querySelector(`[data-tagsearch-path] [data-line-number="${lineNo}"]`)
-                .ancestors(x => x.tagName === 'TR')
-                .first()
-                .after(commentUI.tr);
-            commentUI.previewButton.click(); // todo: don't cause initial focus
-        });
     }
 
     export() {
@@ -565,23 +571,17 @@ class App {
         await this.github.issue.updateIssuePart({ part: 'body', text: renderComment(currentParsed) });
     }
 
-    createCommentUI({ fileElem, context, value }) {
-        const commentUI = new CommentUI({ github: this.github, prPage: this.prPage, fileElem, context, value });
-        commentUI.events.addEventListener('save', async e => {
+    createCommentUI({ fileElem, value }) {
+        const commentUI = new CommentUI({ github: this.github, prPage: this.prPage, fileElem, value });
+        commentUI.events.addEventListener('accept', async e => {
             const { comment } = e.detail;
-            const promise = e.detail.promise();
-            try {
-                this.presentation.addOrReplaceVisual({ visual: comment });
-                await this.persist();
-            } finally {
-                promise.resolve();
-            }
+            this.presentation.addOrReplaceVisual({ visual: comment });
         });
 
-        commentUI.tr.addEventListener('focusin', _ => {
+        commentUI.rootElem.addEventListener('focusin', _ => {
             this.selectVisual(value.id);
         });
-        commentUI.tr.addEventListener('click', _ => {
+        commentUI.rootElem.addEventListener('click', _ => {
             this.selectVisual(value.id);
         });
         return commentUI;
@@ -602,10 +602,10 @@ class App {
             originalButton.parentElement.prepend(addButton)
 
             addButton.addEventListener('click', async e => {
-                const commentUI = this.createCommentUI({ fileElem, context, value: new Comment({ context }) });
+                const commentUI = this.createCommentUI({ fileElem, value: new Comment({ context }) });
 
                 originalButton.ancestors().filter(x => x.tagName === 'TR').first()
-                    .after(commentUI.tr);
+                    .after(commentUI.rootElem);
                 commentUI.writeButton.click();
             });
             return addButton;
@@ -626,17 +626,27 @@ class App {
     onPresentationChange(e) {
         const { added, removed } = e.detail;
         removed.forEach(x => this.sidebar.remove(x.id));
+        removed.forEach(x => document.querySelector(`[data-visual-id="${x.id}"].visual-root`)?.remove());
+
         added.forEach(x => this.sidebar.add(x, this.presentation.indexOf({ id: x.id })));
+        added.forEach(x => {
+            const tr = document.querySelector(`div.file .diff-table tr:has(td[data-line-number="${x.context.lineNo}"])`);
+            const fileElem = tr.ancestors().find(x => x.classList.contains('file')).first();
+            const commentUI = this.createCommentUI({ fileElem, value: x })
+            tr.after(commentUI.rootElem);
+            commentUI.previewButton.click(); // todo: don't cause initial focus
+        });
     }
 
     onSidebarNav(e) {
         const { id } = e.detail;
         this.findVisualUI(id).rootElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        this.selectVisual(id);
     }
 
-    onSidebarSelect(e) {
+    onSidebarDelete(e) {
         const { id } = e.detail;
-        this.selectVisual(id);
+        this.presentation.removeVisual({ id });
     }
 
     async onSidebarReorder(e) {
@@ -644,6 +654,15 @@ class App {
         this.presentation.moveVisual({ id, position: newPosition });
         this.sidebar.move(id, newPosition);
         await this.persist();
+    }
+
+    async onSidebarSave(e) {
+        const promise = e.detail.promise();
+        try {
+            await this.persist();
+        } finally {
+            promise.resolve();
+        }
     }
 
     onSelect(e) {
