@@ -64,6 +64,9 @@ class App {
         if (await getConfig('openFrequency') === 'auto') {
             await this.onSettingsLoad();
         }
+        if (await getConfig('editFrequency') === 'auto') {
+            await settings.setEditMode();
+        }
     }
 
     async import(data) {
@@ -241,7 +244,6 @@ let app;
 
 const onDocumentLoad = async _ => {
     l10n.setLocale(await getConfig('language'));
-
     {
         const prPage = new PullRequestPage();
         const {
@@ -251,6 +253,7 @@ const onDocumentLoad = async _ => {
             repositoryUrl: `/${owner}/${repository}`,
             pullUrl: `/${owner}/${repository}/pull/${pull}`,
         });
+
         app = new App({ document, github, prPage });
         await app.init(document);
     }

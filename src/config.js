@@ -3,6 +3,7 @@
 const defaults = {
     saveFrequency: 'auto',
     openFrequency: 'auto',
+    editFrequency: 'auto',
     language: 'en-US',
 };
 

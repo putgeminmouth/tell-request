@@ -16,9 +16,6 @@ export const strings = {
         navNextButton: {
             title: `Naviguer à l'item suivant`
         },
-        saveButton: {
-            title: `Sauvegarder`
-        },
         markerHandle: {
             title: `Glisser pour réordonner l'item`
         }
@@ -43,12 +40,18 @@ export const strings = {
             }
         }
     },
-    topToolbar: {
+    settings: {
         editButton: {
             title: `Activer l'édition`
         },
         viewButton: {
             title: `Désactiver l'édition`
-        }
+        },
+        loadButton: {
+            text: 'Charger'
+        },
+        saveButton: {
+            text: 'Sauvegarder'
+        },
     }
 };
