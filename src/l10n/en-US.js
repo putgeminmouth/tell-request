@@ -42,11 +42,16 @@ export const strings = {
         }
     },
     settings: {
+        settingsButton: {
+            title: 'Click to sticky the menu'
+        },
         editButton: {
-            title: 'Enter Edit-Mode'
+            title: 'Enter Edit-Mode',
+            text: 'Edit'
         },
         viewButton: {
-            title: 'Enter View-Mode'
+            title: 'Enter View-Mode',
+            text: 'View'
         },
         loadButton: {
             text: 'Load'
