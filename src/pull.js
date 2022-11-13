@@ -257,17 +257,6 @@ const onDocumentLoad = async _ => {
         app = new App({ document, github, prPage });
         await app.init(document);
     }
-
-    (() => {
-        const debug = document.createElement('button');
-        debug.innerHTML = 'Debug';
-        debug.addEventListener('click', e => {
-            const exported = JSON.stringify(app.export());
-            navigator.clipboard.writeText(exported);
-            console.log(exported);
-        });
-        document.body.prepend(debug);
-    }).apply();
 };
 
 if (document.readyState !== 'complete')
