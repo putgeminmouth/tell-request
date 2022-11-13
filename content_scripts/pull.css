@@ -154,10 +154,16 @@ pointer-events: none;
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree ul .marker {
     align-self: center;
     cursor: pointer;
-    font-size: 30px;
     user-select: none;
     margin-right: 5px;
-    margin-left: -7px;
+    /* margin-left: -7px; */
+    width: 10px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree ul .marker {
+    padding-top: 6px;
+    margin-right: 0px;
+    margin-left: 2px;
 }
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker-rail,
@@ -171,7 +177,11 @@ pointer-events: none;
     color: var(--color-canvas-subtle);
     border: solid 1px var(--color-accent-subtle);
     border-left: none;
-    font-size: 15px;
+    width: 15px;
+}
+
+.----cc91a745-d35c-466f-9047-3f20031fb4ae----github-ext-file-tree ul li:has(.marker-rail) {
+    height: 0px;
 }
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .content {

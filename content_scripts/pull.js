@@ -48,8 +48,6 @@ class App {
         this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
         this.presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
 
-        this.files = [];
-
         this.events.addEventListener('select', e => this.onSelect(e));
     }
 
@@ -141,11 +139,27 @@ class App {
         presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
         this.presentation = presentation;
         this.mostRecentImportData = data;
+
+        const warnings = [];
+
+        if (data.files?.length === this.prPage.getFiles().elements.length) {
+            data.files?.forEach((filename, i) => {
+                this.githubFileTree.move({ filename, position: i });
+                this.prPage.moveFileToPosition(filename, i);
+            });
+        } else {
+            warnings.push('Data had a different number of files than the page, file ordering is lost.');
+        }
+
+        if (warnings.length) {
+            window.alert(`Imported with warnings:\n${warnings.join('\n')}`);
+        }
     }
 
     export() {
         return {
             metadata: this.metadata,
+            files: Array.from(this.prPage.getFiles().getFilenames()),
             presentation: this.presentation.export(),
         };
     }
@@ -257,15 +271,10 @@ class App {
     }
 
     async onGithubFileTreeReorder(e) {
-        const { id, newPosition: position, toLast, filename } = e.detail;
-        this.githubFileTree.move({ id, position });
-        const toMove = this.prPage.getFileElementForFile(filename);
-        if (position === Array.from(this.prPage.getFileElements()).length)
-            toMove.parentElement.append(toMove);
-        else {
-            const dest = this.prPage.getFileElementAtPosition(position);
-            dest.before(toMove);
-        }
+        const { id, newPosition, filename } = e.detail;
+        this.githubFileTree.move({ id, position: newPosition });
+
+        this.prPage.moveFileToPosition(filename, newPosition);
     }
 
     onSelect(e) {

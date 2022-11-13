@@ -3,6 +3,10 @@
 import { MAGIC, Util, Promises } from '../common.js';
 import { l10n } from '../l10n.js';
 
+const SVG = {
+    UpDownArrow: `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 61.49 122.88"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;fill:currentColor}</style><g><polygon class="st0" points="30.75,0 0,31.98 19.79,31.98 19.79,90.9 0,90.9 30.75,122.88 61.49,90.9 41.7,90.9 41.7,31.98 61.49,31.98 30.75,0"/></g></svg>`
+}
+
 class UI {
     constructor(rootElem) { this.rootElem = rootElem; }
 
@@ -207,7 +211,7 @@ export class SidebarUI extends UI {
             </div>
             <ol>
                 <li class='edit-mode-visible-only'>
-                    <div class="marker marker-rail">⭥</div>
+                    <div class="marker marker-rail">${SVG.UpDownArrow}</div>
                     <div></div>
                 </li>
             </ol>
@@ -260,7 +264,7 @@ export class SidebarUI extends UI {
     add(visual, index) {
         const item = Util.createElement(`
             <li class="visual">
-                <div class="marker edit-mode-visible-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">⭥</div>
+                <div class="marker edit-mode-visible-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">${SVG.UpDownArrow}</div>
                 <div class="content">
                     <div class="context">
                         <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
@@ -522,7 +526,7 @@ export class GithubFileTree extends UI {
         list.prepend(this.createDropTarget());
         list.prepend(Util.createElement(`
             <li class='edit-mode-visible-only'>
-                <div class="marker marker-rail">⭥</div>
+                <div class="marker marker-rail">${SVG.UpDownArrow}</div>
             </li>
         `));
     }
@@ -556,6 +560,9 @@ export class GithubFileTree extends UI {
     getFilenameForItem(item) {
         return item.querySelector('[data-filterable-item-text]').innerText;
     }
+    getItemForFilename(filename) {
+        return this.list.querySelectorAll('[data-filterable-item-text]').find(x => x.innerText === filename).ancestors(x => x.tagName === 'LI').first();
+    }
 
     add(item) {
         item.style.display = 'flex';
@@ -564,7 +571,7 @@ export class GithubFileTree extends UI {
         const dropTarget = this.createDropTarget();
 
         const marker = Util.createElement(`
-            <div class="marker edit-mode-visible-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">⭥</div>
+            <div class="marker edit-mode-visible-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">${SVG.UpDownArrow}</div>
         `);
 
         marker.addEventListener('dragstart', e => {
@@ -583,8 +590,13 @@ export class GithubFileTree extends UI {
         item.after(dropTarget);
     }
 
-    move({ id, position }) {
-        const item = this.list.querySelector(`#${id}`);
+    move({ id, filename, position }) {
+        let item;
+        if (filename) {
+            item = this.getItemForFilename(filename);
+        } else {
+            item = this.list.querySelector(`#${id}`);
+        }
         const dropTarget = item.nextElementSibling;
         Array.from(this.list.querySelectorAll('li.droptarget'))
             .slice(position, position + 1)
