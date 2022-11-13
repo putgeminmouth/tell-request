@@ -136,7 +136,10 @@ export class GithubApi {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams(params).toString()
         });
-        return await response.text();
+        if (response.status === 200)
+            return await response.text();
+        else
+            return text;
     }
 }
 
