@@ -361,3 +361,7 @@ body:not(.----cc91a745-d35c-466f-9047-3f20031fb4ae----_edit-mode) .edit-mode-ena
     pointer-events: none;
     filter: brightness(0.75);
 }
+
+body:not(.edit-mode-possible) .edit-mode-possible-visible-only {
+    display: none;
+}
