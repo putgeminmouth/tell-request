@@ -54,6 +54,11 @@ class App {
     }
 
     async init(document) {
+        {
+            const previewAuthenticityToken = this.prPage.getPreviewAuthenticityToken();
+            this.github.previewAuthenticityToken = previewAuthenticityToken;
+        }
+
         const sidebar = this.sidebar = new SidebarUI();
         if (document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main')) {
             document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.rootElem);
