@@ -27,6 +27,14 @@ const renderComment = c => {
     return c.comment + ((!c.comment.length || /\s$/.test(c.comment)) ? '' : '\n') + '<!-- ' + MAGIC + JSON.stringify(c.data, null, 2) + MAGIC + ' -->';
 };
 
+export class Metadata {
+    constructor(data) {
+        this.version = data.version || 0;
+        this.lastModifiedDate = data.lastModifiedDate;
+    }
+}
+
+
 class App {
     constructor({ github, prPage }) {
         // <hack>
@@ -102,20 +110,29 @@ class App {
 
         const presentation = new Presentation();
         presentation.events.addEventListener('change', e => this.onPresentationChange(e));
-        presentation.import(data);
+        presentation.import(data.presentation);
+        this.metadata = new Metadata(data.metadata || {});
         presentation.events.addEventListener('change', this.maybePersistOnPresentationChange);
         this.presentation = presentation;
         this.mostRecentImportData = data;
     }
 
     export() {
-        return this.presentation.export();
+        return {
+            metadata: this.metadata,
+            presentation: this.presentation.export(),
+        };
     }
 
     async persist() {
         const currentValue = (await this.github.issue.fetchIssueEditForm(this.prPage.getPullId())).editForm.querySelector('textarea').value;
         const currentParsed = parseComment(currentValue) || { comment: currentValue, data: {} };
+
+        this.metadata.version = (this.metadata.version || 0) + 1;
+        this.metadata.lastModifiedDate = new Date();
+
         currentParsed.data = this.export();
+
         await this.github.issue.updateIssuePart({ part: 'body', text: renderComment(currentParsed) });
     }
 
