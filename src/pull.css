@@ -4,6 +4,10 @@
     user-select: none;
 }
 
+.----cc91a745-d35c-466f-9047-3f20031fb4ae---- svg {
+    fill: currentColor;
+}
+
 /* github */
 
 .hx_Layout.hx_Layout--sidebar-hidden {
@@ -141,10 +145,6 @@ pointer-events: none;
 
 */
 /* .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar li *:nth-child(1){ grid-co */
-
-.----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar svg {
-    fill: currentColor;
-}
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.sidebar ol .marker {
     align-self: center;
