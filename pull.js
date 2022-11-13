@@ -25,7 +25,7 @@ const parseComment = c => {
 };
 
 const renderComment = c => {
-    return c.comment + ((!c.comment.length || /\s$/.test(c.comment)) ? '' : '\n') + '<!-- ' + MAGIC + JSON.stringify(c.data) + MAGIC + ' -->';
+    return c.comment + ((!c.comment.length || /\s$/.test(c.comment)) ? '' : '\n') + '<!-- ' + MAGIC + JSON.stringify(c.data, null, 2) + MAGIC + ' -->';
 };
 
 class Ids {
@@ -128,15 +128,19 @@ class Link {
 class Presentation {
     constructor() {
         this.visuals = [];
+        this.events = Util.createEventTarget();
     }
 
     addOrReplaceVisual({ visual, position }) {
-        const existing = this.visuals.findIndex(x => x.lineNo === visual.context.lineNo);
+        const existing = this.visuals.findIndex(x => x.id === visual.id);
+        let removed = [];
         if (existing !== -1) {
-            this.visuals.splice(existing, 1);
+            removed = this.visuals.splice(existing, 1);
         } else {
         }
         this.visuals.splice(isNaN(position) ? -1 : position, 0, visual);
+
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { added: [visual], removed: removed } }));
     }
 
     findByLineNo(filename, lineNo) {
@@ -144,7 +148,7 @@ class Presentation {
     }
 
     indexOf({ id }) {
-        if (id) return this.visuals.indexOf(x => x.id === id);
+        if (id) return this.visuals.findIndex(x => x.id === id);
         return -1;
     }
 
@@ -152,54 +156,63 @@ class Presentation {
         return { visuals: this.visuals.map(x => x.export()) };
     }
 
-    static import(data) {
-        const visuals = data.visuals.map(v => {
+    import(data) {
+        const removed = this.visuals;
+
+        const added = data.visuals.map(v => {
             const vv = Visual.import(v);
             return vv;
         });
-        const p = new Presentation();
-        p.visuals = visuals;
-        return p;
+        this.visuals = added;
+        this.events.dispatchEvent(new CustomEvent('change', { detail: { added, removed } }));
     }
 }
 
-class CommentUI {
+class VisualUI {
+    constructor(rootElem) {
+        this.rootElem = rootElem;
+    }
+}
+class CommentUI extends VisualUI {
     constructor({ github, prPage, fileElem, context, value }) {
+        super(Util.createElement(`<tr class="${MAGIC} visual-root">`));
         this.github = github;
         this.prPage = prPage;
         this.fileElem = fileElem;
-        this.events = Util.createEventHandler();
+        this.events = Util.createEventTarget();
         this.currentValue = value || new Comment({ context, text: '' });
 
-        const tr = this.tr = Util.createElement({
-            parent: 'tbody', template: `
-            <tr class="${MAGIC} inline-comments">
-                <td class="line-comments" colspan="4">
-                    <div class="comment-form-head tabnav d-flex flex-justify-between mb-2">
-                        <nav class="tabnav-tabs">
-                            <button type="button" name="write" class="btn-link tabnav-tab write-tab">Write</button>
-                            <button type="button" name="preview" class="btn-link tabnav-tab write-tab">Preview</button>
-                        </nav>
+        const td = Util.createElement(`
+            <td class="line-comments" colspan="4">
+                <div class="comment-form-head tabnav d-flex flex-justify-between mb-2">
+                    <nav class="tabnav-tabs">
+                        <button type="button" name="write" class="btn-link tabnav-tab write-tab">Write</button>
+                        <button type="button" name="preview" class="btn-link tabnav-tab write-tab">Preview</button>
+                    </nav>
+                </div>
+                <div name="write" class="tabnav-content">
+                    <div class="toolbar">
+                        <button name="linkTo" class="toolbar-item btn-octicon">🔗⇢</button>
                     </div>
-                    <div name="write" class="tabnav-content">
-                        <div class="toolbar">
-                            <button name="linkTo" class="toolbar-item btn-octicon">🔗⇢</button>
-                        </div>
-                        <textarea class="form-control input-contrast comment-form-textarea"></textarea>
+                    <textarea class="form-control input-contrast comment-form-textarea"></textarea>
+                </div>
+                <div name="preview" class="tabnav-content">
+                    <div class="toolbar">
+                        <div name="position" class="toolbar-item btn-octicon"></div>
                     </div>
-                    <div name="preview" class="tabnav-content">
-                        <div class="toolbar">
-                            <div name="position" class="toolbar-item btn-octicon"></div>
-                        </div>
-                        <div class="comment-body markdown-body"></div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" name="save" class="btn btn-primary">Save</button>
-                        <button type="button" name="cancel" class="btn">Cancel</button>
-                    </div>
-                </td>
-            </tr>
-        `});
+                    <div class="comment-body markdown-body"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" name="save" class="btn btn-primary">Save</button>
+                    <button type="button" name="cancel" class="btn">Cancel</button>
+                </div>
+            </td>
+        `);
+        const tr = this.tr = this.rootElem;
+        tr.setAttribute('data-visual-id', this.currentValue.id);
+        tr.append(td);
+
+        tr.data = { visualUI: this };
         const textarea = this.textarea = tr.querySelector('textarea');
         textarea.value = this.currentValue.text;
         const writeButton = this.writeButton = tr.querySelector('button[name="write"]');
@@ -357,10 +370,65 @@ class TopToolbarUI {
         this.prevButton = toolbar.querySelector('button[name="prev"]');
         this.nextButton = toolbar.querySelector('button[name="next"]');
         this.linkButton = toolbar.querySelector('button[name="linkTo"]');
-        this.events = Util.createEventHandler();
+        this.events = Util.createEventTarget();
 
         this.prevButton.addEventListener('prev', e => this.events.dispatchEvent(e));
         this.prevButton.addEventListener('next', e => this.events.dispatchEvent(e));
+    }
+}
+class SidebarUI {
+    constructor() {
+        const sidebar = this.sidebar = Util.createElement(`
+            <div class="${MAGIC} sidebar">
+                <ol>
+                    <li>
+                        <div class="marker marker-rail">⭥</div>
+                        <div></div>
+                    </li>
+                </ol>
+            </div>
+        `);
+        const list = this.list = sidebar.querySelector('ol');
+        this.events = Util.createEventTarget();
+    }
+
+    add(visual, index) {
+        const item = Util.createElement(`
+            <li>
+                <div class="marker">⭥</div>
+                <div class="content">
+                    <div class="context">
+                        <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
+                        <span>${visual.context.file.filename}: ${visual.context.lineNo}</span>
+                    </div>
+                    <div class="label">${visual.text}</div>
+                </div>
+                <div class="toolbar">
+                    <button name="navTo" class="btn-octicon">⊛</button>
+                    <button class="btn-octicon">?</button>
+                </div>
+            </li>
+        `);
+        const navToButton = item.querySelector('button[name="navTo"]');
+        navToButton.addEventListener('click', e => {
+            this.events.dispatchEvent(new CustomEvent('navTo', { detail: { id: item.data.id } }));
+        });
+        item.data = {
+            id: visual.id,
+            navToButton
+        };
+        const itemToInsertBefore = this.list.querySelector(`li:nth-of-type(${index + 1})`);
+        if (itemToInsertBefore) itemToInsertBefore.before(item); else this.list.append(item);
+    }
+
+    remove(id) {
+        const item = this.list.querySelectorAll('li').find(x => x.data?.id === id);
+        item.remove();
+    }
+
+    select(id) {
+        this.list.querySelectorAll('li.selected').forEach(x => x.classList.remove('selected'));
+        this.list.querySelectorAll('li').find(x => x.data?.id === id)?.classList.add('selected');
     }
 }
 
@@ -368,7 +436,11 @@ class App {
     constructor({ github, prPage }) {
         this.github = github;
         this.prPage = prPage;
+        this.events = Util.createEventTarget();
         this.presentation = new Presentation();
+        this.presentation.events.addEventListener('change', e => this.onPresentationChange(e));
+
+        this.events.addEventListener('select', e => this.onSelect(e));
     }
 
     async init(document) {
@@ -388,27 +460,28 @@ class App {
                 return [];
             });
         };
+
+        const sidebar = this.sidebar = new SidebarUI();
+        document.querySelector('[data-target="diff-layout.mainContainer"].Layout-main').after(sidebar.sidebar);
+        sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e));
+
         const maxId = getAllIds(parsed).map(x => parseInt(x)).toArray().sort((a, b) => b - a).first();
         Ids.initId(maxId);
-        const imported = Presentation.import(parsed.data);
+        this.presentation.import(parsed.data);
 
-        imported.visuals.forEach(v => {
+        this.presentation.visuals.forEach(v => {
             const lineNo = v.context.lineNo;
             const context = new FileContext({ file, lineNo });
             const commentUI = this.createCommentUI({ fileElem, context, value: v });
-            document.querySelector(`*[data-tagsearch-path] *[data-line-number="${lineNo}"]`)
+            document.querySelector(`[data-tagsearch-path] [data-line-number="${lineNo}"]`)
                 .ancestors(x => x.tagName === 'TR')
                 .first()
                 .after(commentUI.tr);
             commentUI.writeButton.click();
         });
-
-        const toolbar = new TopToolbarUI();
-        document.querySelector('.pr-toolbar').append(toolbar.toolbar);
-
-        document.body.addEventListener('focusin', e => {
-            if (e.currentTarget.tagName !== 'TR' || e.currentTarget.classList.contains(MAGIC)) return;
-        });
+        // document.body.addEventListener('focusin', e => {
+        //     if (e.currentTarget.tagName !== 'TR' || e.currentTarget.classList.contains(MAGIC)) return;
+        // });
     }
 
     export() {
@@ -433,6 +506,9 @@ class App {
             } finally {
                 promise.resolve();
             }
+        });
+        commentUI.tr.addEventListener('focusin', _ => {
+            this.selectVisual(value.id);
         });
         return commentUI;
     }
@@ -466,6 +542,33 @@ class App {
             .forEach(originalButton => createButton(originalButton));
 
         return file;
+    }
+
+    findVisualUI(id) {
+        return document.querySelector(`[data-visual-id="${id}"]`)?.data.visualUI;
+    }
+
+    onPresentationChange(e) {
+        const { added, removed } = e.detail;
+        // add before remove to preserve validity of incides
+        added.forEach(x => this.sidebar.add(x, this.presentation.indexOf({ id: x.id })));
+        removed.forEach(x => this.sidebar.remove(x.id));
+    }
+
+    onSidebarNav(e) {
+        const { id } = e.detail;
+        this.findVisualUI(id).rootElem.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    onSelect(e) {
+        const { id } = e.detail;
+        this.sidebar.select(id);
+    }
+
+    selectVisual(id) {
+        document.querySelectorAll(`.${MAGIC}.visual-root.selected`).forEach(x => x.classList.remove('selected'));
+        this.findVisualUI(id)?.rootElem.classList.add('selected');
+        this.events.dispatchEvent(new CustomEvent('select', { detail: { id } }));
     }
 }
 

@@ -108,21 +108,12 @@ export const Util = {
         const arrayLike = it.length ? it : Array.from(it);
         return arrayLike[Math.floor(Math.random() * arrayLike.length)];
     },
-    createElement: opts => {
-        let template;
-        let parent;
-        if (typeof opts === 'object') {
-            ({ template, parent } = opts);
-        } else {
-            template = opts;
-        }
-        parent = parent || 'div';
-
-        const tpl = document.createElement(parent);
+    createElement: template => {
+        const tpl = document.createElement('template');
         tpl.innerHTML = template;
-        return tpl.firstElementChild;
+        return tpl.content.firstElementChild;
     },
-    createEventHandler: () => {
+    createEventTarget: () => {
         const underlying = document.createElement('div');
         const eventMethods = ['addEventListener', 'removeEventListener', 'dispatchEvent'];
         const handler = {};
