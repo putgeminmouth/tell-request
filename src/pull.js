@@ -183,7 +183,6 @@ class App {
         const { id, newPosition } = e.detail;
         this.presentation.moveVisual({ id, position: newPosition });
         this.sidebar.move(id, newPosition);
-        await this.persist();
     }
 
     async onSidebarSave(e) {
