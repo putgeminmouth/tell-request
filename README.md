@@ -1,6 +1,8 @@
 # Tell Request
 
-Guide reviewers through your pull requests.
+Guide reviewers through your pull requests with this chrome extension.
+
+<img src="docs/tell.gif" loading="lazy">
 
 ## What is a tell request?
 
