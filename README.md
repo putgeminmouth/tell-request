@@ -21,6 +21,6 @@ There a lots of ways of doing this:
 * Limiting the amount of overall changes
 * Limiting the scope and complexity of the overall changes
 * Linking to relevant documentation / requirements / context
-* Presenting the changes in an in-person
+* Presenting the changes in a meeting
 
 These are all useful tools that hopefully you already use. A Tell Request is one more tool that has elements of some of the others.
