@@ -3,6 +3,7 @@
     "name": "Tell Request",
     "description": "Provide guided narratives for your code change requests",
     "version": "0.0.0",
+    "homepage_url": "http://tellrequest.com/",
     "icons": {
         "48": "icon48.png"
     },
