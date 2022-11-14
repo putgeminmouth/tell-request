@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Review Story",
+    "name": "Tell Request",
     "description": "Provide guided narratives for your code change requests",
     "version": "0.0.0",
     "icons": {
@@ -14,7 +14,7 @@
         "default_icon": {
             "16": "icon48.png"
         },
-        "default_title": "Review Story",
+        "default_title": "Tell Request",
         "default_popup": "popup/popup.html"
     },
     "optional_permissions": [],
