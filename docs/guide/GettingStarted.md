@@ -64,3 +64,32 @@ Local shortcuts is a button you can click. As long as you don't click away or ot
 You may also enable shortcuts globally in the settings. Global shortcuts are always activated.
 
 <img src="shortcuts_2.jpg" loading="lazy">
+
+# Saving / Data Persistance
+
+The data model for a Tell Request is kept separate from regular Github elements. In particular, Tell comments are not regular Github comments.
+
+All data for a Tell Request is saved as hidden markdown in the pull requests main comment.
+
+<img src="data_1.jpg" loading="lazy">
+
+This is how the experience is shared among users.
+
+# Browser Extension / Permissions
+
+The browser extension does the following:
+
+## Modify Github's HTML
+
+The plugin adds new and modifies existing UI elements on Github.
+
+## Persist information in your browser
+
+Your preferences are saved to browser storage.
+
+## Call Github's API on your behalf
+
+The following functionality performs calls to Github on your behalf using your browser session:
+
+* Preview
+* Save / Load
