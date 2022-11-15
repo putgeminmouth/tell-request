@@ -24,3 +24,8 @@ There a lots of ways of doing this:
 * Presenting the changes in a meeting
 
 These are all useful tools that hopefully you already use. A Tell Request is one more tool that has elements of some of the others.
+
+## Documentation
+
+Read the guide / documentation: [GettingStarted.md](docs/guide/GettingStarted.md)
+
