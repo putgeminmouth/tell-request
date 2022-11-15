@@ -19,10 +19,8 @@ function build_v3 {
     pushd $WORK
 
     pushd extension
-    ln -s manifest.v3.json manifest.json
-    popd
-
-    zip -r extension.zip extension
+    mv manifest.v3.json manifest.json
+    zip -r ../extension.zip *
 }
 
 function build_v2 {
@@ -34,10 +32,8 @@ function build_v2 {
     pushd $WORK
 
     pushd extension
-    ln -s manifest.v2.json manifest.json
-    popd
-
-    zip -r extension.zip extension
+    mv manifest.v2.json manifest.json
+    zip -r ../extension.zip *
 }
 
 clean
