@@ -149,13 +149,14 @@ class App {
         settings.events.addEventListener('toggleEditMode', e => this.onSettingsToggleEditMode(e));
         document.querySelector('.diffbar > :last-child').before(settings.rootElem);
 
-        if (!this.prPage.fileTreeHasDirectories()) {
-            let githubFileTree = document.querySelector('file-tree');
-            if (githubFileTree) {
-                githubFileTree = this.githubFileTree = new GithubFileTree(githubFileTree);
-                githubFileTree.events.addEventListener('reorder', e => this.onGithubFileTreeReorder(e));
+        if (false)
+            if (!this.prPage.fileTreeHasDirectories()) {
+                let githubFileTree = document.querySelector('file-tree');
+                if (githubFileTree) {
+                    githubFileTree = this.githubFileTree = new GithubFileTree(githubFileTree);
+                    githubFileTree.events.addEventListener('reorder', e => this.onGithubFileTreeReorder(e));
+                }
             }
-        }
 
         this.initAddVisualButtons();
 
@@ -238,7 +239,7 @@ class App {
     export() {
         return {
             metadata: this.metadata,
-            files: Array.from(this.prPage.getFiles().getFilenames()),
+            files: this.githubFileTree ? Array.from(this.prPage.getFiles().getFilenames()) : undefined,
             presentation: this.presentation.export(),
         };
     }
