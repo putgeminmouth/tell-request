@@ -1,10 +1,10 @@
-# Tell Request
+# <picture><img src="docs/icon.png" valign="bottom"></picture> Tell Request
 
 Guide reviewers through your pull requests with this chrome extension.
 
-<img src="docs/tell.gif" loading="lazy">
-
 ## What is a tell request?
+
+<img src="docs/tell.gif" loading="lazy">
 
 A Tell Request is a collection of comments and visual cues applied to a pull request, presented in a suggested viewing order. You are asking someone to let you tell them about your changes before they pull.
 
