@@ -71,7 +71,7 @@ const init = async () => {
             dialog.querySelector('button[name="close"]').addEventListener('click', _ => dialog.close());
             const setupShortcut = async name => {
                 const { enabled: initialEnabled, shortcut: initialShortcutJson } = (await getConfig(`shortcuts`))[name] || {};
-                console.log(JSON.stringify(await getConfig(`shortcuts`)), initialEnabled, JSON.stringify(initialShortcutJson));
+
                 let initialShortcut = new Shortcut(initialShortcutJson);
 
                 const enabledInput = dialog.querySelector(`input[name="shortcuts.${name}.enabled"]`);
@@ -127,6 +127,16 @@ const init = async () => {
             setupShortcut('navPrev');
             setupShortcut('navNext');
         }
+    }
+
+    {
+        document.querySelector('input[name="isLicensed"]').checked = !!await getConfig('isLicensed');
+        document.querySelectorAll('input[name="isLicensed"]').forEach(x => x.addEventListener('change', async e => {
+            setConfig('isLicensed', !!e.currentTarget.checked);
+        }));
+        document.querySelector('button[name="licenseDetails"]').addEventListener('click', _ => {
+            window.open('https://github.com/TellRequest/browser-extension/blob/master/LICENSE.md');
+        });
     }
 
     {
