@@ -22,7 +22,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://github.com/*/*/pull/*"
+                "https://github.com/*/*/pull/*/files"
             ],
             "js": [
                 "content_scripts/pull.import.js"
