@@ -1,7 +1,7 @@
 # Getting Started
 
 Layout of a Tell Request:
-<img src="comments_1.jpg" loading="lazy">
+<img src="../overview_1.jpg" loading="lazy">
 
 A tell request is all about providing a tour of the changes that is as much about pointing things out as it is about the order in which you do so.
 
@@ -39,7 +39,8 @@ You can put comments in the order of your choosing by dragging the handle to the
 
 # Navigating
 
-You can navigate a Tell Request using the back and forth buttons on the sidebar as well as keyboard shortcuts.
+Navigation between cues in order is a key feature of a Tell Request.
+You can click an item in the list, or follow the sequence using the back and forth buttons on the sidebar as well as keyboard shortcuts.
 
 ## Via the sidebar
 
