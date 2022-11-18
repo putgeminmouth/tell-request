@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Tell Request",
     "description": "Provide guided narratives for your code change requests",
-    "version": "0.0.0.2",
+    "version": "0.0.0.3",
     "homepage_url": "https://tellrequest.com/",
     "icons": {
         "48": "icon48.png"

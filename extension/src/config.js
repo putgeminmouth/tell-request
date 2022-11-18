@@ -17,7 +17,8 @@ const defaults = {
             shortcut: { key: 'ArrowRight' }
         }
 
-    }
+    },
+    licenseType: 'basic'
 };
 
 export const getConfig = async (name) => {

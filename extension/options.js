@@ -130,10 +130,21 @@ const init = async () => {
     }
 
     {
-        document.querySelector('input[name="isLicensed"]').checked = !!await getConfig('isLicensed');
-        document.querySelectorAll('input[name="isLicensed"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('isLicensed', !!e.currentTarget.checked);
+        document.querySelectorAll('input[name="licenseType"]').forEach(x => x.addEventListener('change', async e => {
+            setConfig('licenseType', e.currentTarget.value);
         }));
+        document.querySelector(`input[name="licenseType"][value="${await getConfig('licenseType')}"]`).checked = true;
+
+        switch (await getConfig('licenseType')) {
+            case 'pro':
+                document.querySelector(`div[name="licenseTypeText"]`).innerText = 'Thank you for upgrading to the pro version! 👍';
+                break;
+            default:
+            case 'basic':
+                document.querySelector(`div[name="licenseTypeText"]`).innerHTML = 'Please consider upgrading to the pro version! 🙇‍♀️ Click <button name="licenseDetails">here</button> for details.';
+                break;
+        }
+
         document.querySelector('button[name="licenseDetails"]').addEventListener('click', _ => {
             window.open('https://github.com/TellRequest/browser-extension/blob/master/LICENSE.md');
         });
