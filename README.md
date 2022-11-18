@@ -29,4 +29,4 @@ These are all useful tools that hopefully you already use. A Tell Request is one
 
 Read the guide / documentation: [GettingStarted.md](docs/guide/GettingStarted.md)
 
-Once you've installed the plugin, checkout some [examples](https://github.com/TellRequest/browser-extension/pulls?q=is%3Aopen+is%3Apr+label%3Aexample)
+Once you've installed the plugin, checkout some [examples](pulls?q=is%3Aopen+is%3Apr+label%3Aexample)

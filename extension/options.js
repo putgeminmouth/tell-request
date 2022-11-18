@@ -146,7 +146,7 @@ const init = async () => {
         }
 
         document.querySelector('button[name="licenseDetails"]').addEventListener('click', _ => {
-            window.open('https://github.com/TellRequest/browser-extension/blob/master/LICENSE.md');
+            window.open('https://github.com/putgeminmouth/tell-request/blob/master/LICENSE.md');
         });
     }
 
