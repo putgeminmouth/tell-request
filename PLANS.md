@@ -12,4 +12,4 @@ The primary advantage of purchasing the pro version is the right to click this b
 ![](docs/pro.jpg)
 
 * Question: couldn't I just click it anyways without purchasing?
-* Asnwer: you wouldn't though, would you?
+* Answer: you wouldn't though, would you?
