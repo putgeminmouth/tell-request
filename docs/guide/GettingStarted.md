@@ -3,14 +3,9 @@
 Layout of a Tell Request:
 <img src="../overview_1.jpg" loading="lazy">
 
-A tell request is all about providing a tour of the changes that is as much about pointing things out as it is about the order in which you do so.
+A tell request is all about providing a tour of the changes that is as much about pointing things out as it is about the order in which you do so. Think of a slideshow inlined within a set of diffs.
 
-Sometimes this can be as simple as:
-1. Here's an interface defining a contract
-1. Look at these tests explaining it's use cases
-1. Please scrutinize the implementation details
-
-But in real life there can be some back and forth and some incidental changes along the way.
+The basic (and currently only) cue in a Tell Request is a comment, and serves a few purposes: to point out a location of interest, explain it (how it relates to the previous & next cues), and set where in the presentation order it fits.
 
 # Comments
 
@@ -92,5 +87,6 @@ Your preferences are saved to browser storage.
 
 The following functionality performs calls to Github on your behalf using your browser session:
 
-* Preview
-* Save / Load
+* Preview: leverages the same mechanism as regular comment previews
+* Save / Load: leverages the same mechanism as regular commit edits
+
