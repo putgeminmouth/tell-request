@@ -176,7 +176,7 @@ export class PullRequestPage {
 
         const nextTR = buttonTR.nextElementSibling;
         const authenticityToken = nextTR.querySelector('form[action$="/create"] input.js-data-preview-url-csrf').value;
-        document.querySelector('[data-confirm-cancel-text]').click();
+        nextTR.querySelectorAll('[data-confirm-cancel-text]').forEach(x => x.click());
         return authenticityToken;
     }
 
