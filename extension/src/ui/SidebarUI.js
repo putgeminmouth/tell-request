@@ -76,7 +76,7 @@ export class SidebarUI extends UI {
                 <div class="marker edit-mode-visible-only" draggable="true" title="${l10n.get('sidebar.markerHandle.title')}">${SVG.UpDownArrow}</div>
                 <div class="content">
                     <div class="context">
-                        <svg class="color-fg-muted" width="16" height="16"><use href="#octicon_file_16"></use></svg>
+                        ${SVG.Folder}
                         <span>${l10n.get('sidebar.context.text', { filename: visual.context.file.filename, lineNo: visual.context.lineNo })}</span>
                     </div>
                     <div class="label">${visual.text}</div>
@@ -118,10 +118,24 @@ export class SidebarUI extends UI {
         item.before(dropTarget);
     }
 
+    append(visual) {
+        this.add(visual, this.list.querySelectorAll(`li.droptarget`).length - 1);
+    }
+
     remove(id) {
         const item = this.list.querySelectorAll('li.visual').find(x => x.data?.id === id);
         item.nextElementSibling.remove();
         item.remove();
+    }
+
+    clear() {
+        this.list.querySelectorAll('li.visual')
+            .filter(x => !!x.data?.id)
+            .toArray()
+            .forEach(x => {
+                x.nextElementSibling.remove();
+                x.remove();
+            });
     }
 
     move(id, position) {

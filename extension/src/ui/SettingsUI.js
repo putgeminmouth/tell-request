@@ -51,6 +51,11 @@ export class SettingsUI extends UI {
             </dialog>
         `;
 
+        this.loadItem = this.rootElem.querySelector('button[name="load"').ancestors().find(x => x.matches('li'));
+        this.saveItem = this.rootElem.querySelector('button[name="save"').ancestors().find(x => x.matches('li'));
+        this.importItem = this.rootElem.querySelector('button[name="import"').ancestors().find(x => x.matches('li'));
+        this.exportItem = this.rootElem.querySelector('button[name="export"').ancestors().find(x => x.matches('li'));
+
         this.rootElem.querySelector('button[name="settings"]').addEventListener('click', e => {
             e.stopPropagation();
             this.rootElem.querySelector('button[name="settings"]+ol').classList.toggle('visible');

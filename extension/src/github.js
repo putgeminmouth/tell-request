@@ -169,6 +169,10 @@ export class PullRequestPage {
         return document.querySelector('meta[name="user-login"]')?.getAttribute('content');
     }
 
+    getCommentBodies() {
+        return document.querySelectorAll('.comment-body');
+    }
+
     getPreviewAuthenticityToken() {
         const button = document.querySelector('button.add-line-comment');
         const buttonTR = button.ancestors().find(x => x.tagName === 'TR');
