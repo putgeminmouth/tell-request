@@ -2,6 +2,8 @@
 
 Guide reviewers through your pull requests with this chrome extension.
 
+TL;DR: put PR comments in order and easily navigate between them.
+
 ## What is a tell request?
 
 <img src="docs/tell.gif" loading="lazy">

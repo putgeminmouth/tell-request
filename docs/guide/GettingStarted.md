@@ -7,6 +7,14 @@ A tell request is all about providing a tour of the changes that is as much abou
 
 The basic (and currently only) cue in a Tell Request is a comment, and serves a few purposes: to point out a location of interest, explain it (how it relates to the previous & next cues), and set where in the presentation order it fits.
 
+# QuickStart
+
+There are two basic modes: EditMode and InlineMode.
+
+InlineMode lets you tag regular github comments with a prefix such as `tr#1` to indicate the navigation order. This is the easiest and lowest-friction way to try things out.
+
+EditMode lets you create comments that are not regular github comments and only show to people using the plugin. In the future other features will be supported this way.
+
 # Comments
 
 Comments you add with Tell Request serve two purposes: explaining and ordering. They appear inline similar to regular Github comments, as well as in the Sidebar.
