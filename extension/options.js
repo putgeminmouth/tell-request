@@ -56,6 +56,21 @@ const init = async () => {
     }
 
     {
+        const input = document.querySelector('input[name="inlineModePattern"]');
+        document.querySelector('input[name="inlineModePattern"]').addEventListener('change', e => {
+            try {
+                new RegExp(input.value);
+                input.classList.remove('error');
+            } catch (e) {
+                input.classList.add('error');
+                return;
+            }
+            setConfig('inlineModePattern', input.value);
+        });
+        input.value = await getConfig('inlineModePattern');
+    }
+
+    {
         document.querySelectorAll('input[name="enableGlobalKeyboardShortcuts"]').forEach(x => x.addEventListener('change', async e => {
             setConfig('enableGlobalKeyboardShortcuts', e.currentTarget.checked);
         }));

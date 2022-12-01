@@ -18,6 +18,23 @@
         vertical-align: bottom;
     }
 
+    input.error {
+        border: solid red 1px;
+    }
+
+    div.regex {
+        display: inline-block;
+    }
+
+    div.regex::before,
+    div.regex::after {
+        content: "/";
+        font-size: 1.75em;
+        font-weight: bold;
+        margin-left: 2px;
+        margin-right: 2px;
+    }
+
     hr {
         margin: 10px 3px;
     }
@@ -154,12 +171,20 @@
     <hr>
 
     <div class="option">
-        <div class="title">Editing</div>
+        <div class="title">Edit Mode</div>
         <div class="radio-group">
             <div><input type="radio" name="editFrequency" value="auto" id="editFrequency.auto"><label for="editFrequency.auto">Enter Edit-Mode automatically when I am the author</label></div>
             <div><input type="radio" name="editFrequency" value="manual" id="editFrequency.manual"><label for="editFrequency.manual">Enter Edit-Mode only when the button is ued</label></div>
         </div>
         <div><input type="checkbox" name="editOnlyOwn" id="editOnlyOwn"><label for="editOnlyOwn">Completely hide and disable Edit-Mode when I'm not the author (overrides other settings)</label></div>
+    </div>
+
+    <div class="option">
+        <div class="title">Inline Mode</div>
+        <div>
+            <div class="regex"><input type="text" name="inlineModePattern" id="inlineModePattern"></div>
+            <label for="inlineModePattern">Comments matching this regex will be used to build the presentation. Must have two capture groups, first for the position, second for the content. Edit Mode will be disabled.</label>
+        </div>
     </div>
 </div>
 

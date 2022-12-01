@@ -28,7 +28,7 @@ const onDocumentLoad = async _ => {
             pullUrl: `/${owner}/${repository}/pull/${pull}`,
         });
 
-        if (LightApp.getCommentBodies(prPage).first()) {
+        if ((await LightApp.getCommentBodies(prPage)).first()) {
             app = new LightApp({ document, github, prPage });
         } else {
             app = new DefaultApp({ document, github, prPage });

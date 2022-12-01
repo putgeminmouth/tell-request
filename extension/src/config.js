@@ -18,6 +18,7 @@ const defaults = {
         }
 
     },
+    inlineModePattern: '^tr#(\\d+)\\s+(.*)',
     licenseType: 'basic'
 };
 

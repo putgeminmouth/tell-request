@@ -8,6 +8,12 @@ import { SettingsUI } from '../src/ui/SettingsUI.js';
 import { getConfig } from '../src/config.js';
 import { KeyboardShortcutHandler, Metadata, parseComment, renderComment } from './app.js';
 
+export const getCommentOrderRegex = async () => {
+    if (getCommentOrderRegex.memo) return getCommentOrderRegex.memo;
+    getCommentOrderRegex.memo = new RegExp(await getConfig('inlineModePattern'));
+    return getCommentOrderRegex.memo;
+};
+
 export class LightApp {
     constructor({ github, prPage }) {
         this.github = github;
@@ -147,22 +153,23 @@ export class LightApp {
         this.sidebar.rootElem.classList.toggle('collapsed', collapsed);
     }
 
-    static CommentOrderRegex = /^#=(\d+)\s*(.*)/;
-    static getCommentBodies(prPage) {
+    static async getCommentBodies(prPage) {
+        const regex = await getCommentOrderRegex();
         return prPage.getCommentBodies()
-            .filter(x => LightApp.CommentOrderRegex.test(x.innerText));
+            .filter(x => regex.test(x.innerText));
     }
     async onSettingsLoad() {
         await this.clear();
-        LightApp.getCommentBodies(this.prPage)
+        const regex = await getCommentOrderRegex();
+        (await LightApp.getCommentBodies(this.prPage))
             .toArray()
             .sort((a, b) => {
-                const orderA = Number.parseInt(a.innerText.replace(LightApp.CommentOrderRegex, '$1'));
-                const orderB = Number.parseInt(b.innerText.replace(LightApp.CommentOrderRegex, '$1'));
+                const orderA = Number.parseInt(a.innerText.replace(regex, '$1'));
+                const orderB = Number.parseInt(b.innerText.replace(regex, '$1'));
                 return orderA - orderB;
             })
             .forEach(commentBodyElem => {
-                const text = commentBodyElem.innerText.replace(LightApp.CommentOrderRegex, '$2');
+                const text = commentBodyElem.innerText.replace(regex, '$2');
 
                 const tableCell = commentBodyElem.ancestors().find(x => x.matches('td'));
 
