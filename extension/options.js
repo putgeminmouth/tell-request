@@ -6,6 +6,27 @@ import './src/ui/svg.js';
 import { Shortcut } from './src/ui/Shortcut.js';
 import './src/template.js';
 
+const initBoolean = async (name) => {
+    const inputName = name;
+    const configName = name;
+    const input = document.querySelectorAll(`input[name="${inputName}"]`);
+    input.forEach(x => x.addEventListener('change', async e => {
+        awaitsetConfig(configName, e.currentTarget.checked);
+    }));
+    for (const x of input)
+        x.checked = !!(await getConfig(configName));
+};
+
+const initRadio = async (name) => {
+    const inputName = name;
+    const configName = name;
+    document.querySelectorAll(`input[name="${inputName}"]`).forEach(x => x.addEventListener('change', async e => {
+        await setConfig(configName, e.currentTarget.value);
+    }));
+    document.querySelector(`input[name="${inputName}"][value="${await getConfig(configName)}"]`).checked = true;
+
+};
+
 const init = async () => {
     document.querySelector('button[name="openInNewTab"]').addEventListener('click', _ => {
         window.open(chrome.runtime.getURL("options.html"));
@@ -13,10 +34,7 @@ const init = async () => {
     });
 
     {
-        document.querySelectorAll('input[name="saveFrequency"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('saveFrequency', e.currentTarget.value);
-        }));
-        document.querySelector(`input[name="saveFrequency"][value="${await getConfig('saveFrequency')}"]`).checked = true;
+        await initRadio('saveFrequency');
     }
 
     {
@@ -27,9 +45,9 @@ const init = async () => {
             option.innerHTML = l;
             if (l === initialLanguage)
                 option.setAttribute('selected', 'selected');
-            document.querySelector('select[name=language]').append(option);
+            document.querySelector('select[name="language"]').append(option);
         });
-        document.querySelector('select[name=language]').addEventListener('change', e => {
+        document.querySelector('select[name="language"]').addEventListener('change', e => {
             const value = e.target.selectedOptions[0].value;
             l10n.setLocale(value);
             setConfig('language', value);
@@ -37,22 +55,12 @@ const init = async () => {
     }
 
     {
-        document.querySelectorAll('input[name="editFrequency"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('editFrequency', e.currentTarget.value);
-        }));
-        document.querySelector(`input[name="editFrequency"][value="${await getConfig('editFrequency')}"]`).checked = true;
-
-        document.querySelectorAll('input[name="editOnlyOwn"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('editOnlyOwn', e.currentTarget.checked);
-        }));
-        document.querySelector(`input[name="editOnlyOwn"]`).checked = !!await getConfig('editOnlyOwn');
+        await initRadio('editFrequency');
+        await initBoolean('editOnlyOwn');
     }
 
     {
-        document.querySelectorAll('input[name="openFrequency"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('openFrequency', e.currentTarget.value);
-        }));
-        document.querySelector(`input[name="openFrequency"][value="${await getConfig('openFrequency')}"]`).checked = true;
+        await initRadio('openFrequency');
     }
 
     {
@@ -71,10 +79,7 @@ const init = async () => {
     }
 
     {
-        document.querySelectorAll('input[name="enableGlobalKeyboardShortcuts"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('enableGlobalKeyboardShortcuts', e.currentTarget.checked);
-        }));
-        document.querySelector(`input[name="enableGlobalKeyboardShortcuts"]`).checked = !!await getConfig('enableGlobalKeyboardShortcuts');
+        await initBoolean('enableGlobalKeyboardShortcuts');
 
         const customizeDialog = document.querySelector('dialog[name="keyboardShortcuts"]');
         document.querySelector('button[name="customize"]').addEventListener('click', _ => {
@@ -145,10 +150,36 @@ const init = async () => {
     }
 
     {
-        document.querySelectorAll('input[name="licenseType"]').forEach(x => x.addEventListener('change', async e => {
-            setConfig('licenseType', e.currentTarget.value);
-        }));
-        document.querySelector(`input[name="licenseType"][value="${await getConfig('licenseType')}"]`).checked = true;
+        await initBoolean('security.enableRepositoryWhitelist');
+        await initRadio('security.promptUnknownRepository');
+
+        const dialog = document.querySelector('dialog[name="allowedRepositoriesDialog"]');
+        document.querySelector('button[name="editAllowedRepositories"]').addEventListener('click', _ => {
+            dialog.showModal();
+        });
+        dialog.querySelector('button[name="close"]').addEventListener('click', _ => dialog.close());
+
+        ['repositories', 'owners'].forEach(async type => {
+            const configName = `security.${type}.allowed`;
+            const allowedSelect = dialog.querySelector(`select[name="${type}.allowed"]`);
+
+            const configValues = await getConfig(configName);
+            configValues.forEach(async l => {
+                const option = document.createElement('option');
+                option.setAttribute('value', l);
+                option.innerHTML = l;
+                allowedSelect.append(option);
+            });
+
+            dialog.querySelector(`button[name="${type}.delete"]`).addEventListener('click', async _ => {
+                Array.from(allowedSelect.selectedOptions).forEach(x => x.remove());
+                await setConfig(configName, Array.from(allowedSelect.options).map(x => x.value));
+            });
+        });
+    }
+
+    {
+        await initRadio('licenseType');
 
         switch (await getConfig('licenseType')) {
             case 'pro':

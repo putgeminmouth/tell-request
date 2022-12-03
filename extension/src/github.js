@@ -175,6 +175,7 @@ export class PullRequestPage {
 
     getPreviewAuthenticityToken() {
         const button = document.querySelector('button.add-line-comment');
+        if (!button) return; // not logged in
         const buttonTR = button.ancestors().find(x => x.tagName === 'TR');
         document.querySelector('button.add-line-comment').click();
 

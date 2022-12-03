@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
 <style type="text/css">
     body {
         background-color: #181f29;
@@ -56,6 +58,20 @@
 
     .section:not(.table) {
         padding-top: 0px;
+    }
+
+    .layout-column {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .layout-column>button {
+        align-self: flex-start;
+    }
+
+    .layout-row {
+        display: flex;
+        flex-direction: row;
     }
 
     .table {
@@ -214,8 +230,47 @@
             </div>
         </dialog>
     </div>
+</div>
 
-    <hr>
+<div class="section">
+    <div class="title">Security</div>
+
+    <div class="option">
+        <div class="title">Allowed Repositories</div>
+        <div>To prevent abuse (and absolve the author of responsibility) the plugin will not load any content by default until authorized on a repository. The default settings will prompt you to authorize a repository the first time content is detected.</div>
+        <div><input type="checkbox" name="security.enableRepositoryWhitelist" id="security.enableRepositoryWhitelist"><label for="security.enableRepositoryWhitelist">Only run on authorized repositories</label></div>
+        <div class="radio-group">
+            <div><input type="radio" name="security.promptUnknownRepository" value="never" id="security.promptUnknownRepository.never"><label for="security.promptUnknownRepository.never">Never prompt</label></div>
+            <div><input type="radio" name="security.promptUnknownRepository" value="always" id="security.promptUnknownRepository.always"><label for="security.promptUnknownRepository.always">Always prompt</label></div>
+            <div><input type="radio" name="security.promptUnknownRepository" value="detect" id="security.promptUnknownRepository.detect"><label for="security.promptUnknownRepository.detect">Detect (prompt if content is detected)</label></div>
+        </div>
+        <div><button name="editAllowedRepositories" style="margin-left: 5px; margin-top: 5px">Edit Repositories</button></div>
+    </div>
+    <dialog name="allowedRepositoriesDialog" style="overflow: auto">
+        <div class="title">Authorized Repositories and Owners</div>
+
+        <div class="layout-row" style="justify-content: space-evenly">
+            <div class="layout-column">
+                <label for="repositories.allowed">Repositories</label>
+                <div class="option"><select name="repositories.allowed" id="repositories.allowed" multiple style="min-width: 100px; padding: 5px; max-width: 250px"></select></div>
+
+                <button name="repositories.delete" class="btn">❌</button>
+            </div>
+
+            &nbsp;
+
+            <div class="layout-column">
+                <label for="owners.allowed">Owners</label>
+                <div class="option"><select name="owners.allowed" id="owners.allowed" multiple style="min-width: 100px; padding: 5px; max-width: 250px"></select></div>
+
+                <button name="owners.delete" class="btn">❌</button>
+            </div>
+        </div>
+
+        <div class="button-bar">
+            <button name="close" class="btn">Close</button>
+        </div>
+    </dialog>
 </div>
 
 <div class="section">

@@ -8,7 +8,7 @@ import { DividerUI } from '../src/ui/DividerUI.js';
 import { SettingsUI } from '../src/ui/SettingsUI.js';
 import { GithubFileTree } from '../src/ui/GithubFileTree.js';
 import { getConfig } from '../src/config.js';
-import { KeyboardShortcutHandler, Metadata, parseComment, renderComment } from './app.js';
+import { authorize, KeyboardShortcutHandler, Metadata, parseComment, renderComment } from './app.js';
 
 export class DefaultApp {
     constructor({ github, prPage }) {
@@ -80,8 +80,13 @@ export class DefaultApp {
 
         this.keyboardShortcuts = await KeyboardShortcutHandler.load(this);
 
-        if (await getConfig('openFrequency') === 'auto') {
-            await this.onSettingsLoad();
+        const contentData = await this.getContentData();
+        const isAutoLoad = await getConfig('openFrequency') === 'auto';
+        const { owner, repository } = this.prPage.parseUrl();
+        const authorized = await authorize({ owner, repository, wouldAutoLoad: isAutoLoad && contentData });
+
+        if (isAutoLoad && contentData && authorized) {
+            await this.import(contentData);
         }
         if (await getConfig('editFrequency') === 'auto' && this.prPage.getAuthorGibhubId() === this.prPage.getCurrentUserGithubId()) {
             await settings.setEditMode();
@@ -329,10 +334,14 @@ export class DefaultApp {
         await this.persist();
     }
 
-    async onSettingsLoad(e) {
+    async getContentData() {
         const issueForm = await this.github.issue.fetchIssueEditForm(this.prPage.getPullId());
         const currentValue = issueForm.editForm.querySelector('textarea').value;
         const parsed = parseComment(currentValue);
+        return parsed;
+    }
+    async onSettingsLoad(e) {
+        const parsed = await this.getContentData();
         if (parsed)
             this.import(parsed.data);
     }

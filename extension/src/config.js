@@ -1,5 +1,7 @@
 'use strict';
 
+import { Promises } from "./common.js";
+
 const defaults = {
     saveFrequency: 'auto',
     openFrequency: 'auto',
@@ -19,12 +21,25 @@ const defaults = {
 
     },
     inlineModePattern: '^tr#(\\d+)\\s+(.*)',
-    licenseType: 'basic'
+    licenseType: 'basic',
+    'security.enableRepositoryWhitelist': true,
+    'security.promptUnknownRepository': 'detect',
+    'security.repositories.allowed': [],
+    'security.owners.allowed': [],
 };
 
 export const getConfig = async (name) => {
+    const promise = Promises.create();
     try {
-        let value = (await chrome.storage.sync.get(`options.${name}`))[`options.${name}`];
+        // MDN claims this returns a promise but FF 107.0.1 doesn't...
+        chrome.storage.sync.get(`options.${name}`, x => promise.resolve(x));
+        const storageValue = await promise;
+        if (storageValue === undefined) {
+            console.warn(`chrome.storage.sync unavailable on get '${name}'`);
+            storageValue = {};
+        }
+
+        let value = storageValue[`options.${name}`];
         if (value === undefined)
             value = defaults[name];
         return value;

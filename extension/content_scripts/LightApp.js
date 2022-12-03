@@ -6,7 +6,7 @@ import { SidebarUI } from '../src/ui/SidebarUI.js';
 import { DividerUI } from '../src/ui/DividerUI.js';
 import { SettingsUI } from '../src/ui/SettingsUI.js';
 import { getConfig } from '../src/config.js';
-import { KeyboardShortcutHandler, Metadata, parseComment, renderComment } from './app.js';
+import { authorize, KeyboardShortcutHandler, Metadata, parseComment, renderComment } from './app.js';
 
 export const getCommentOrderRegex = async () => {
     if (getCommentOrderRegex.memo) return getCommentOrderRegex.memo;
@@ -67,8 +67,13 @@ export class LightApp {
 
         this.keyboardShortcuts = await KeyboardShortcutHandler.load(this);
 
-        if (await getConfig('openFrequency') === 'auto') {
-            this.onSettingsLoad();
+        const contentData = await LightApp.getCommentBodies(this.prPage);
+        const isAutoLoad = await getConfig('openFrequency') === 'auto';
+        const { owner, repository } = this.prPage.parseUrl();
+        const authorized = await authorize({ owner, repository, wouldAutoLoad: isAutoLoad && contentData });
+
+        if (isAutoLoad && contentData && authorized) {
+            this.load(contentData);
         }
 
         {
@@ -160,8 +165,12 @@ export class LightApp {
     }
     async onSettingsLoad() {
         await this.clear();
+        const commentBodies = await LightApp.getCommentBodies(this.prPage);
+        return this.load(commentBodies);
+    }
+    async load(commentBodies) {
         const regex = await getCommentOrderRegex();
-        (await LightApp.getCommentBodies(this.prPage))
+        commentBodies
             .toArray()
             .sort((a, b) => {
                 const orderA = Number.parseInt(a.innerText.replace(regex, '$1'));
