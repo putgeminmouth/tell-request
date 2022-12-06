@@ -65,11 +65,3 @@ clean
 test || die "test: fail"
 build_v2
 build_v3
-
-VERSION="$(cat $(find . -name manifest.json | head) | jq -r .version)"
-COMMIT="$(current_commit)"
-TAG="v${VERSION}"
-
-git tag "$TAG" "$COMMIT" || die "add tag: fail"
-git push origin "$TAG"
-
