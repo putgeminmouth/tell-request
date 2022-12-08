@@ -80,7 +80,7 @@ export class DefaultApp {
 
         this.keyboardShortcuts = await KeyboardShortcutHandler.load(this);
 
-        const contentData = await this.getContentData();
+        const contentData = (await this.getContentData())?.data;
         const isAutoLoad = await getConfig('openFrequency') === 'auto';
         const { owner, repository } = this.prPage.parseUrl();
         const authorized = await authorize({ owner, repository, wouldAutoLoad: isAutoLoad && contentData });
