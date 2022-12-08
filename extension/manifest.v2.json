@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Tell Request",
     "description": "Provide guided narratives for your code change requests",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "homepage_url": "https://github.com/putgeminmouth/tell-request",
     "icons": {
         "48": "icon48.png"
