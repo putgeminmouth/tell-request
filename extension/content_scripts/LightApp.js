@@ -7,6 +7,7 @@ import { DividerUI } from '../src/ui/DividerUI.js';
 import { SettingsUI } from '../src/ui/SettingsUI.js';
 import { getConfig } from '../src/config.js';
 import { authorize, KeyboardShortcutHandler, Metadata, parseComment, renderComment } from './app.js';
+import { l10n } from '../src/l10n.js';
 
 export const getCommentOrderRegex = async () => {
     if (getCommentOrderRegex.memo) return getCommentOrderRegex.memo;
@@ -57,6 +58,7 @@ export class LightApp {
         sidebar.rootElem.before(divider.rootElem);
 
         sidebar.events.addEventListener('navTo', e => this.onSidebarNav(e), { signal: this.masterAbortSignal });
+        this.events.addEventListener('navTo', e => this.onCommentNav(e), { signal: this.masterAbortSignal });
 
         const settings = this.settings = new SettingsUI();
         settings.events.addEventListener('load', e => this.onSettingsLoad(e), { signal: this.masterAbortSignal });
@@ -86,6 +88,41 @@ export class LightApp {
                 }, { signal: this.masterAbortSignal });
             }
         }
+
+        await this.initCommentNavButtons();
+    }
+
+    async initCommentNavButtons() {
+        this.prPage.getCommentHolders()
+            .toArray()
+            .forEach(holder => {
+                const group = holder.querySelector('.timeline-comment-group')?.firstElementChild;
+
+                const toolbar = Util.createElement(`
+                    <div class="${MAGIC} toolbar navbar">
+                        <button name="prev" class="toolbar-item btn-octicon" title="${l10n.get('sidebar.navPrevButton.title')}">◀</button>
+                        <button name="next" class="toolbar-item btn-octicon" title="${l10n.get('sidebar.navNextButton.title')}">▶</button>
+                    </div>
+                `);
+                group.prepend(toolbar);
+
+                toolbar.querySelector('button[name="prev"]').addEventListener('click', _ => {
+                    const id = holder.querySelector('.comment-body').getAttribute('data-visual-id');
+                    if (!id)
+                        return;
+                    const index = this.presentation.indexOf({ id });
+                    if (index > 0)
+                        this.selectVisual({ index: index - 1 });
+                });
+                toolbar.querySelector('button[name="next"]').addEventListener('click', _ => {
+                    const id = holder.querySelector('.comment-body').getAttribute('data-visual-id');
+                    if (!id)
+                        return;
+                    const index = this.presentation.indexOf({ id });
+                    if (index < this.presentation.length - 1)
+                        this.selectVisual({ index: index + 1 });
+                });
+            });
     }
 
     async clear() {

@@ -198,6 +198,19 @@ export class DefaultApp {
             }
         }, { signal: this.masterAbortSignal });
 
+        commentUI.events.addEventListener('navPrev', async e => {
+            const { id } = e.detail;
+            const index = this.presentation.indexOf({ id });
+            if (index > 0)
+                this.selectVisual({ index: index - 1 });
+        }, { signal: this.masterAbortSignal });
+        commentUI.events.addEventListener('navNext', async e => {
+            const { id } = e.detail;
+            const index = this.presentation.indexOf({ id });
+            if (index < this.presentation.length - 1)
+                this.selectVisual({ index: index + 1 });
+        }, { signal: this.masterAbortSignal });
+
         commentUI.rootElem.addEventListener('focusin', _ => {
             if (this.presentation.findById(value.id))
                 this.selectVisual({ id: value.id });

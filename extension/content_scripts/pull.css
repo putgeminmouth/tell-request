@@ -32,6 +32,7 @@
 }
 
 .----cc91a745-d35c-466f-9047-3f20031fb4ae----.visual-root .comment-form-head {
+    display: flex;
     flex-flow: row;
     background-color: var(--color-canvas-subtle);
 }

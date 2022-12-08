@@ -171,6 +171,10 @@ export class PullRequestPage {
 
     getCommentBodies() {
         return document.querySelectorAll('.comment-body');
+
+    }
+    getCommentHolders() {
+        return document.querySelectorAll('.comment-holder');
     }
 
     getPreviewAuthenticityToken() {

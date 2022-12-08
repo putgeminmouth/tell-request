@@ -20,6 +20,10 @@ export class CommentUI extends VisualUI {
                         <button type="button" name="write" class="btn-link tabnav-tab write-tab">${l10n.get('visual.comment.writeTab.text')}</button>
                         <button type="button" name="preview" class="btn-link tabnav-tab write-tab">${l10n.get('visual.comment.previewTab.text')}</button>
                     </nav>
+                    <div class="toolbar navbar" style="align-self: center">
+                        <button name="prev" class="toolbar-item btn-octicon" title="${l10n.get('sidebar.navPrevButton.title')}">◀</button>
+                        <button name="next" class="toolbar-item btn-octicon" title="${l10n.get('sidebar.navNextButton.title')}">▶</button>
+                    </div>
                 </div>
                 <div name="write" class="tabnav-content">
                     <textarea class="form-control input-contrast comment-form-textarea"></textarea>
@@ -60,69 +64,27 @@ export class CommentUI extends VisualUI {
                 this.setTab(name);
             });
         });
-        // tr.querySelector('button[name="linkTo"]').addEventListener('click', _ => {
-        //     const svg = Util.createElement(`
-        //         <svg style="position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible">
-        //             <!--
-        //             <circle class="debug1" fill="blue" cx="0" cy="0" r="5"></circle>
-        //             <circle class="debug2" fill="yellow" cx="0" cy="0" r="5"></circle>
-        //             -->
-        //             <path stroke="red" stroke-width="2" fill="yellow" fill-opacity="0.5"></path>
-        //         </svg>
-        //     `);
-        //     const path = svg.querySelector('path');
-        //     // tr.querySelector('button[name="linkTo"]').after(svg);
-        //     document.body.append(svg);
-        //     document.addEventListener('mousemove', e => {
-        //         const getDocumentOffset = e => {
-        //             const r = e.getBoundingClientRect();
-        //             return { x: r.x + window.scrollX, y: r.y + window.scrollY };
-        //         };
-        //         const commonOrigin = getDocumentOffset(tr.querySelector('button[name="linkTo"]'));
-        //         const commonTarget = { x: e.pageX, y: e.pageY };
-        //         const calcControlPoint = ({ origin, target, focalMultiplier, bias }) => {
-        //             const segment = { x: target.x - origin.x, y: target.y - origin.y };
-        //             const ctrl = (() => {
-        //                 const mid = { x: segment.x * bias, y: segment.y * bias };
-        //                 // svg.querySelector('circle.debug1').setAttribute('cx', origin.x + mid.x);
-        //                 // svg.querySelector('circle.debug1').setAttribute('cy', origin.y + mid.y);
-        //                 const midAngle = Math.atan2(segment.y, segment.x);
-        //                 const orthY = Math.sin(midAngle - Math.PI / 2);
-        //                 const orthX = Math.cos(midAngle - Math.PI / 2);
-        //                 const focalLength = focalMultiplier * Math.sqrt(mid.x * mid.x + mid.y * mid.y);
-        //                 const focus = { x: mid.x + orthX * focalLength, y: mid.y + orthY * focalLength };
-        //                 // svg.querySelector('circle.debug2').setAttribute('cx', origin.x + focus.x);
-        //                 // svg.querySelector('circle.debug2').setAttribute('cy', origin.y + focus.y);
-        //                 return focus;
-        //             }).apply();
-        //             return { segment, ctrl };
-        //         };
-        //         const commonSegment = { x: Math.abs(commonTarget.x - commonOrigin.x), y: Math.abs(commonTarget.y - commonOrigin.y) };
-        //         const d = commonSegment.x > commonSegment.y;
-        //         const dx = d ? 0 : 5;
-        //         const dy = d ? -5 : 0;
-        //         const path1 = (() => {
-        //             const origin = { x: commonOrigin.x - dx, y: commonOrigin.y - dy };
-        //             const target = commonTarget;
-        //             const { segment, ctrl } = calcControlPoint({ origin, target, focalMultiplier: 1.6, bias: 0.2 });
-        //             return `l ${-dx} ${-dy} q ${ctrl.x} ${ctrl.y} ${segment.x} ${segment.y}`;
-        //         }).apply();
-        //         const path2 = (() => {
-        //             const origin = commonTarget;
-        //             const target = { x: commonOrigin.x + dx, y: commonOrigin.y + dy };
-        //             const { segment, ctrl } = calcControlPoint({ origin, target, focalMultiplier: -0.6, bias: 0.8 });
-        //             return `q ${ctrl.x} ${ctrl.y} ${segment.x} ${segment.y}`;
-        //         }).apply();
-        //         path.setAttribute('d', `M ${commonOrigin.x} ${commonOrigin.y} ${path1} ${path2} L ${commonOrigin.x} ${commonOrigin.y}`);
-        //         const other = document.elementsFromPoint(e.clientX, e.clientY)
-        //             .find(x => x.matches(`tr.${MAGIC} :scope`));
-        //         if (other) {
-        //             const otherAncestor = Element.ancestors(other).find(x => x.matches(`tr.${MAGIC}`));
-        //             document.querySelectorAll('.visual-linker-over').toArray().forEach(x => x.classList.remove('visual-linker-over'));
-        //             otherAncestor.classList.add('visual-linker-over');
-        //         }
-        //     });
-        // });
+
+        tr.querySelector('.navbar button[name="prev"]').addEventListener('click', e => {
+            const id = this.currentValue.id;
+            if (!id)
+                return;
+            // hackish we do it here but it prevents a click handler set elsewhere on the root elemen to select on click
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            this.events.dispatchEvent(new CustomEvent('navPrev', { detail: { id } }));
+        });
+        tr.querySelector('.navbar button[name="next"]').addEventListener('click', e => {
+            const id = this.currentValue.id;
+            if (!id)
+                return;
+            // hackish we do it here but it prevents a click handler set elsewhere on the root elemen to select on click
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            this.events.dispatchEvent(new CustomEvent('navNext', { detail: { id } }));
+        });
     }
 
     onCancelClick() {
